@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80" role="img" aria-label="Pronto.IA">
+  <rect x="8" y="20" width="40" height="40" rx="10" fill="#00D97E"/>
+  <circle cx="28" cy="40" r="10" fill="#0B1929"/>
+  <text x="64" y="51" font-family="Geist, -apple-system, system-ui, sans-serif" font-size="28" font-weight="500" letter-spacing="-0.02em" fill="#FAFAF7">Pronto</text>
+  <text x="171" y="51" font-family="Instrument Serif, Times New Roman, serif" font-style="italic" font-size="32" fill="#FAFAF7">.</text>
+  <text x="184" y="51" font-family="Geist, -apple-system, system-ui, sans-serif" font-size="28" font-weight="500" letter-spacing="-0.02em" fill="#FAFAF7">IA</text>
+</svg>

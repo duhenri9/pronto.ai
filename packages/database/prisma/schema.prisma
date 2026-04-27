@@ -1,0 +1,310 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// PRONTO.IA — Core Domain Schema
+// WhatsApp-first AI training platform for MEIs
+// ============================================
+
+/// Administrators of the platform
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  phone        String?  @unique  // WhatsApp number
+  passwordHash String
+  role         UserRole @default(STUDENT)
+  avatarUrl    String?
+
+  // Vertical the user belongs to (salão, food, prestadores)
+  vertical     Vertical?
+
+  // Business info for MEIs
+  businessName String?
+  businessType String?  // e.g. "manicure", "restaurante", "eletricista"
+  city         String?
+  state        String?
+
+  // Preferences
+  preferredTime String?  // "manhã", "tarde", "noite"
+  whatsappId    String?  // WhatsApp Business API contact ID
+
+  // Relations
+  enrollments    Enrollment[]
+  certificates   Certificate[]
+  progress       LessonProgress[]
+  dailyCheckins  DailyCheckin[]
+  payments       Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([phone])
+  @@index([vertical])
+}
+
+enum UserRole {
+  ADMIN
+  STUDENT
+  COMPANY_ADMIN
+  COMPANY_USER
+}
+
+enum Vertical {
+  SALAO          // salão de beleza / estética
+  FOOD_SERVICE   // food service local / dark kitchen / marmiteira
+  HOME_SERVICE   // prestadores de serviço em casa
+}
+
+/// Learning tracks (trilhas) — one per vertical + level
+model Trilha {
+  id          String   @id @default(cuid())
+  name        String   // e.g. "IA para Salão — Básico"
+  slug        String   @unique
+  description String
+  vertical    Vertical
+  level       TrilhaLevel @default(BASIC)
+  isPro       Boolean  @default(false)  // true = R$19-29/mês
+  order       Int      @default(0)
+
+  // Persona that delivers this trilha
+  personaName String   @default("Bia")  // Bia for salão, etc
+  personaSlug String   @default("bia")
+
+  lessons     Lesson[]
+  enrollments Enrollment[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([vertical, level])
+  @@index([slug])
+}
+
+enum TrilhaLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+/// Individual lessons within a trilha (microlições de 5-7 min)
+model Lesson {
+  id          String   @id @default(cuid())
+  trilhaId    String
+  title       String
+  slug        String
+  description String
+  order       Int      // sequence within trilha
+  durationMin Int      @default(5)  // minutes
+
+  // Content delivered via WhatsApp
+  whatsappFlow Json?   // WhatsApp Cloud API flow definition
+  audioUrl     String?  // audio message URL
+  textContent  String   // text version of the lesson
+  exercisePrompt String?  // practical exercise instruction
+
+  // Next lesson trigger condition
+  completionType LessonCompletionType @default(CHAT_REPLY)
+
+  progress    LessonProgress[]
+  trilha      Trilha   @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([trilhaId, slug])
+  @@index([trilhaId, order])
+}
+
+enum LessonCompletionType {
+  CHAT_REPLY     // student replies to Maria/agent
+  EXERCISE_DONE  // student completes practical exercise
+  AUTO_ADVANCE   // auto-advance after reading
+}
+
+/// Student enrollment in a trilha
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  trilhaId  String
+  status    EnrollmentStatus @default(ACTIVE)
+  source    EnrollmentSource @default(ORGANIC)
+
+  // Outcome tracking — the core metric
+  reportedRevenueBeforeCents Int?    // revenue before enrollment (cents)
+  reportedRevenueAfterCents  Int?    // revenue after 30/60 days (cents)
+  reportedOutcomeAt          DateTime?
+
+  startedAt  DateTime @default(now())
+  completedAt DateTime?
+  pausedAt   DateTime?
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trilha     Trilha   @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, trilhaId])
+  @@index([userId])
+  @@index([trilhaId])
+  @@index([status])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+enum EnrollmentSource {
+  ORGANIC
+  B2G_CONTRACT
+  B2B_PARTNER
+  AFFILIATE
+  REFERRAL
+}
+
+/// Per-lesson progress tracking
+model LessonProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  lessonId  String
+  status    ProgressStatus @default(NOT_STARTED)
+
+  // Student's exercise response
+  exerciseResponse String?
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson  Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+/// Daily check-in from WhatsApp
+model DailyCheckin {
+  id        String   @id @default(cuid())
+  userId    String
+  trilhaId  String
+  lessonId  String?  // lesson delivered that day
+  responded Boolean @default(false)
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+/// Outcome-based certificates — "Ana ganhou +R$1.240 em 60 dias"
+model Certificate {
+  id           String   @id @default(cuid())
+  userId       String
+  trilhaId     String
+  code         String   @unique  // verification code
+
+  // Outcome data on the cert
+  outcomeLabel String?  // e.g. "+R$1.240 em 60 dias"
+  issuedAt     DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([code])
+  @@index([userId])
+}
+
+/// Payments (B2C Pro + B2B/B2G contracts)
+model Payment {
+  id             String       @id @default(cuid())
+  userId         String?
+  amountCents    Int
+  status         PaymentStatus @default(PENDING)
+  type           PaymentType
+  provider       PaymentProvider @default(STRIPE)
+  providerId     String?      // external payment ID
+  metadata       Json?
+
+  user           User?        @relation(fields: [userId], references: [id])
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([provider, providerId])
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentType {
+  B2C_PRO_MONTHLY
+  B2G_CONTRACT
+  B2B_CONTRACT
+}
+
+enum PaymentProvider {
+  STRIPE
+  MERCADO_PAGO
+  PIX
+  BANK_TRANSFER
+}
+
+/// B2G/B2B partner organizations
+model Partner {
+  id          String       @id @default(cuid())
+  name        String
+  type        PartnerType
+  contractValueCents Int?
+  contractStart     DateTime?
+  contractEnd       DateTime?
+  maxStudents       Int?
+  verticalFocus     Vertical?
+  contactEmail      String?
+  contactPhone      String?
+  isActive    Boolean      @default(true)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+}
+
+enum PartnerType {
+  GOVERNMENT_STATE
+  GOVERNMENT_MUNICIPAL
+  SEBRAE
+  SENAC
+  SENAI
+  SINDICATE
+  ASSOCIATION
+  ENTERPRISE
+}

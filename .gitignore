@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.env
+*.local
+.turbo/
+.DS_Store
+
+# Prisma
+packages/database/prisma/migrations/
+
+# Build outputs
+apps/web/dist/
+apps/api/dist/
+packages/*/dist/
+
+# Original brand docs (kept locally, not in repo)
+do.opus.4.7.index.html
+files.zip
+index.html
+prontoia_design_concept_mockup.html

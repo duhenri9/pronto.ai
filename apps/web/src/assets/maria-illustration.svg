@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 280" width="240" height="280" role="img" aria-label="Maria, mentora do Pronto.IA">
+  <defs>
+    <linearGradient id="mariaSkin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#D4A78C"/>
+      <stop offset="100%" stop-color="#B5876A"/>
+    </linearGradient>
+    <linearGradient id="mariaBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00D97E" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#FFD60A" stop-opacity="0.18"/>
+    </linearGradient>
+  </defs>
+  <!-- background circle -->
+  <circle cx="120" cy="130" r="108" fill="url(#mariaBg)"/>
+  <!-- shoulders / blouse -->
+  <path d="M40 280 C 50 220, 80 200, 120 200 C 160 200, 190 220, 200 280 Z" fill="#FAFAF7"/>
+  <path d="M40 280 C 50 220, 80 200, 120 200 C 160 200, 190 220, 200 280 Z" fill="none" stroke="#0A0A0A" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- neck -->
+  <path d="M105 195 L105 215 Q120 222 135 215 L135 195 Z" fill="url(#mariaSkin)" stroke="#0A0A0A" stroke-width="2"/>
+  <!-- hair back -->
+  <path d="M55 130 Q55 70 120 60 Q185 70 185 130 L185 200 Q170 175 165 145 Q120 165 75 145 Q70 175 55 200 Z" fill="#2E2419"/>
+  <!-- face -->
+  <ellipse cx="120" cy="135" rx="52" ry="62" fill="url(#mariaSkin)" stroke="#0A0A0A" stroke-width="2.5"/>
+  <!-- hair front -->
+  <path d="M68 110 Q72 85 100 78 Q130 70 165 88 Q175 100 173 130 Q150 110 130 112 Q100 112 75 130 Q68 120 68 110 Z" fill="#2E2419"/>
+  <path d="M75 130 Q90 118 110 120" fill="none" stroke="#1A140A" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- eyebrows -->
+  <path d="M92 122 Q100 119 108 122" fill="none" stroke="#0A0A0A" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M132 122 Q140 119 148 122" fill="none" stroke="#0A0A0A" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- eyes (closed-smile style) -->
+  <path d="M90 138 Q100 142 110 138" fill="none" stroke="#0A0A0A" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M130 138 Q140 142 150 138" fill="none" stroke="#0A0A0A" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- nose -->
+  <path d="M120 148 Q117 158 122 162" fill="none" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- mouth · gentle smile -->
+  <path d="M108 172 Q120 178 132 172" fill="none" stroke="#0A0A0A" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- cheek blush -->
+  <ellipse cx="92" cy="160" rx="8" ry="5" fill="#E8A089" opacity="0.5"/>
+  <ellipse cx="148" cy="160" rx="8" ry="5" fill="#E8A089" opacity="0.5"/>
+  <!-- earring · gold accent -->
+  <circle cx="71" cy="150" r="3" fill="#FFD60A" stroke="#0A0A0A" stroke-width="1"/>
+  <circle cx="169" cy="150" r="3" fill="#FFD60A" stroke="#0A0A0A" stroke-width="1"/>
+  <!-- collar accent -->
+  <path d="M105 215 L120 230 L135 215" fill="none" stroke="#0A0A0A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- subtle green pin (brand connection) -->
+  <circle cx="155" cy="240" r="6" fill="#00D97E" stroke="#0A0A0A" stroke-width="1.5"/>
+</svg>
