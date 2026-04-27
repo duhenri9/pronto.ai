@@ -1,6 +1,6 @@
 # Pronto.IA
 
-Plataforma Nacional de Treinamento em IA para MEIs brasileiros.
+Plataforma brasileira de treinamento em inteligência artificial (IA), com o objetivo de oferecer acesso a habilidades na área para a população.
 
 ## Setup
 
