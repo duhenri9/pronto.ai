@@ -152,7 +152,7 @@ export function DonateSection() {
 
           {/* Modal */}
           <div
-            className={`relative w-[95%] sm:w-full sm:max-w-[480px] bg-[#0F1535] rounded-t-2xl sm:rounded-2xl p-6 sm:p-8 shadow-elev-3 max-h-[95vh] overflow-y-auto transition-all duration-200 ${isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+            className={`relative w-[95%] sm:w-full sm:max-w-[480px] bg-[#0A0E1A] rounded-t-2xl sm:rounded-2xl p-6 sm:p-8 shadow-elev-3 max-h-[95vh] overflow-y-auto transition-all duration-200 ${isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
           >
             {/* Close button */}
             <button
