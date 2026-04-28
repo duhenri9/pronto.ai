@@ -219,8 +219,10 @@ export function DonateSection() {
                     <Wallet size={16} className="text-[#757994]" />
                     <span className="text-caption font-medium text-white/80">Outro valor</span>
                   </div>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body-s text-[#757994]">R$</span>
+                  <div className="flex items-stretch">
+                    <span className="flex items-center rounded-l-lg border border-r-0 border-[#4D5274] bg-[#1A2150] px-4 text-body-s text-[#757994]">
+                      R$
+                    </span>
                     <input
                       type="text"
                       inputMode="decimal"
@@ -230,8 +232,8 @@ export function DonateSection() {
                         setCustomAmount(val);
                         setSelectedAmount(null);
                       }}
-                      placeholder="Digite o valor"
-                      className="w-full rounded-lg border border-[#4D5274] bg-[#252B54] pl-14 pr-4 py-3 text-body-s text-white placeholder:text-[#757994] focus:border-[#00D97E] focus:outline-none transition-colors"
+                      placeholder="0,00"
+                      className="w-full rounded-r-lg border border-[#4D5274] bg-[#252B54] px-4 py-3 text-body-s text-white placeholder:text-[#757994] focus:border-[#00D97E] focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
