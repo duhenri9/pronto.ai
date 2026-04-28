@@ -52,7 +52,7 @@ export function LearningJourney() {
           Sua jornada de aprendizado
         </h2>
         <p className="text-center text-[#9DA1B4] text-lg mb-16 max-w-xl mx-auto">
-          Do primeiro "Oi Maria" ao certificado, em 3 passos simples.
+          Do primeiro "Oi Maria" ao resultado no seu negócio, em 3 passos.
           Sem app novo, sem complicação.
         </p>
 
