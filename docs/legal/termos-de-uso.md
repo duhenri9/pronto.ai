@@ -86,14 +86,14 @@ Você se compromete a **NÃO**:
 
 ## 12. Legislação Aplicável e Foro
 
-Estes Termos são regidos pela legislação brasileira. Para resolução de conflitos, fica eleito o foro da comarca de [PREENCHER: cidade/estado], com renúncia a qualquer outro, por mais privilegiado que seja.
+Estes Termos são regidos pela legislação brasileira. Para resolução de conflitos, fica eleito o foro da comarca de São Paulo - SP, com renúncia a qualquer outro, por mais privilegiado que seja.
 
 ---
 
 ## Dados do Controlador
 
-- **Razão social / Nome:** [PREENCHER]
-- **CNPJ / CPF:** [PREENCHER]
-- **Endereço:** [PREENCHER]
-- **E-mail de contato:** [PREENCHER]
-- **Encarregado (DPO):** [PREENCHER]
+- **Razão social / Nome:** WM3 DIGITAL LTDA
+- **CNPJ / CPF:** 55.060.419/0001-20
+- **Endereço:** Rua Cel Jose Eusebio, 95, Casa 13, Higienópolis, São Paulo - SP, CEP 01239-030
+- **E-mail de contato:** contato@prontoia.com.br
+- **Encarregado (DPO):** contato@prontoia.com.br

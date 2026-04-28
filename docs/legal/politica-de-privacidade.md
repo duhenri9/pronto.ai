@@ -13,9 +13,9 @@ para as oportunidades e desafios da IA no dia a dia.
 - **Razão social / Nome:** WM3 DIGITAL LTDA
 - **CNPJ / CPF:** 55.060.419/0001-20
 - **Endereço:** Rua Cel Jose Eusebio, 95, Casa 13, Higienópolis, São Paulo - SP, CEP 01239-030
-- **E-mail de contato:** [PREENCHER EMAIL]
-- **Encarregado (DPO):** [PREENCHER]
-- **E-mail do DPO:** [PREENCHER]
+- **E-mail de contato:** contato@prontoia.com.br
+- **Encarregado (DPO):** contato@prontoia.com.br
+- **E-mail do DPO:** contato@prontoia.com.br
 
 ## 3. Dados Coletados
 
@@ -115,5 +115,5 @@ Reservamo-nos o direito de atualizar esta Política. Alterações significativas
 ## 13. Contato
 
 Para dúvidas sobre privacidade ou para exercer seus direitos:
-- **E-mail:** [PREENCHER]
-- **Endereço:** [PREENCHER]
+- **E-mail:** contato@prontoia.com.br
+- **Endereço:** Rua Cel Jose Eusebio, 95, Casa 13, Higienópolis, São Paulo - SP, CEP 01239-030
