@@ -92,7 +92,7 @@ export function LearningJourney() {
               <div key={item.label} className="text-center group">
                 <item.icon className="w-6 h-6 text-[#00D97E] mx-auto mb-3 group-hover:scale-110 transition-transform" />
                 <p className="text-3xl font-bold text-white/90 mb-1">{item.value}</p>
-                <p className="text-xs text-[#757994] uppercase tracking-wider">{item.label}</p>
+                <p className="text-xs text-[#757994] tracking-wider">{item.label}</p>
               </div>
             ))}
           </div>
