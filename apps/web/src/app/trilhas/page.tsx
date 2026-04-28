@@ -496,15 +496,13 @@ export default function TrilhasPage() {
                         ))}
                       </div>
 
-                      <Link
-                        href={`https://wa.me/5511999999999?text=Oi%20Maria%21%20Quero%20fazer%20o%20m%C3%B3dulo%20${encodeURIComponent(modulo.title)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <a
+                        href={`#${modulo.id}`}
                         className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full border ${c.border} ${c.text} text-sm font-medium hover:${c.bg} transition-colors`}
                       >
-                        Quero fazer este módulo
+                        Saber Mais...
                         <ArrowRight className="w-4 h-4" />
-                      </Link>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -579,18 +577,6 @@ export default function TrilhasPage() {
                     ))}
                   </div>
 
-                  {/* CTA */}
-                  <div className="mt-8">
-                    <Link
-                      href={`https://wa.me/5511999999999?text=Oi%20Maria%21%20Quero%20fazer%20a%20trilha%20${encodeURIComponent(trilha.title)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full border ${c.border} ${c.text} text-sm font-medium hover:bg-[#1A2150]/50 transition-colors`}
-                    >
-                      Quero fazer esta trilha
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
                 </div>
               );
             })}
