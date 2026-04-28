@@ -138,7 +138,7 @@ export function DonateSection() {
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-[#00D97E] px-5 py-3 text-body-s font-medium text-[#0F1535] shadow-elev-2 hover:scale-105 transition-all duration-fast ease-out"
         aria-label="Apoie o Pronto.IA"
       >
-        <Heart size={18} strokeWidth={2} className="animate-pulse" />
+        <Heart size={18} strokeWidth={2} />
         Apoie
       </button>
 
