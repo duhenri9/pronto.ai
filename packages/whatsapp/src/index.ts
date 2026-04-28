@@ -184,10 +184,15 @@ export class MetaCloudAPI implements WhatsAppProvider {
       .update(body)
       .digest('hex');
 
-    return crypto.timingSafeEqual(
-      Buffer.from(expectedSig),
-      Buffer.from(signature),
-    );
+    const expectedBuf = Buffer.from(expectedSig);
+    const sigBuf = Buffer.from(signature);
+
+    // timingSafeEqual requires buffers of equal length — mismatched length = invalid
+    if (expectedBuf.length !== sigBuf.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(expectedBuf, sigBuf);
   }
 
   parseWebhook(body: unknown): ParsedWebhookEvent[] {
@@ -360,10 +365,15 @@ export class ZAPIProvider implements WhatsAppProvider {
       .update(body)
       .digest('hex');
 
-    return crypto.timingSafeEqual(
-      Buffer.from(hash),
-      Buffer.from(signature),
-    );
+    const expectedBuf = Buffer.from(hash);
+    const sigBuf = Buffer.from(signature);
+
+    // timingSafeEqual requires buffers of equal length — mismatched length = invalid
+    if (expectedBuf.length !== sigBuf.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(expectedBuf, sigBuf);
   }
 
   parseWebhook(body: unknown): ParsedWebhookEvent[] {

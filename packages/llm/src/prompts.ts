@@ -19,7 +19,9 @@ export interface LoadedPrompt {
   systemPrompt: string;
 }
 
-const PROMPTS_DIR = process.env.PROMPTS_DIR ?? join(process.cwd(), 'prompts', 'personas');
+function getPromptsDir(): string {
+  return process.env.PROMPTS_DIR ?? join(process.cwd(), 'prompts', 'personas');
+}
 
 const cache = new Map<string, LoadedPrompt>();
 
@@ -45,7 +47,7 @@ export function loadPrompt(persona: string): LoadedPrompt {
   if (cached) return cached;
 
   const filename = `${persona}.md`;
-  const filepath = join(PROMPTS_DIR, filename);
+  const filepath = join(getPromptsDir(), filename);
 
   if (!existsSync(filepath)) {
     throw new Error(`Prompt file not found: ${filepath}`);
@@ -75,8 +77,9 @@ export function clearPromptCache(): void {
 }
 
 export function listAvailablePersonas(): string[] {
-  if (!existsSync(PROMPTS_DIR)) return [];
-  const files = readdirSync(PROMPTS_DIR);
+  const promptsDir = getPromptsDir();
+  if (!existsSync(promptsDir)) return [];
+  const files = readdirSync(promptsDir);
   return files
     .filter((f) => f.endsWith('.md'))
     .map((f) => f.replace('.md', ''));

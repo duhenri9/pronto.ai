@@ -8,8 +8,8 @@ const MAX_INPUT_LENGTH = 4000;
 const MAX_OUTPUT_LENGTH = 2000;
 const BLOCKED_PATTERNS: RegExp[] = [
   // English patterns
-  /ignore\s+(all\s+)?(previous|prior|above|the\s+)?instructions?/i,
-  /disregard\s+(all\s+)?(previous|prior|above|the\s+)?instructions?/i,
+  /ignore\s+(all\s+)?(previous\s+|prior\s+|above\s+|the\s+)?instructions?/i,
+  /disregard\s+(all\s+)?(previous\s+|prior\s+|above\s+|the\s+)?instructions?/i,
   /jailbreak/i,
   /reveal\s+(your|the)\s+(system\s+)?prompt/i,
   /you\s+are\s+now\s+(a\s+)?(new|different|another)/i,
@@ -17,11 +17,11 @@ const BLOCKED_PATTERNS: RegExp[] = [
   /act\s+as\s+if/i,
 
   // Portuguese patterns — pt-BR jailbreak/injection
-  /ignor(e|ar)\s+(todas\s+|as\s+|os\s+)?(instruç|instruc|orientaç)/i,
+  /ignor(e|ar)\s+(todas\s+as\s+|as\s+|os\s+|todas\s+)?(instruç|instruc|orientaç)/i,
   /finja\s+que\s+(voc[êe]|és)/i,
   /a\s+partir\s+de\s+agora\s+(voc[êe]|és)/i,
   /revele\s+(seu|o)\s+(sistema|prompt|funcionamento)/i,
-  /esqueça\s+(tudo|as\s+instruç|o\s+que\s+foi\s+dito)/i,
+  /esqueça\s+(tudo|todas\s+as\s+instruç|as\s+instruç|o\s+que\s+foi\s+dito)/i,
   /voc[êe]\s+agora\s+[ée]\s+(um|uma)\s+(novo|diferente|outro)/i,
   /haja\s+como\s+se\s+(voc[êe]|fosse)/i,
 ];

@@ -1,0 +1,1 @@
+process.env.PROMPTS_DIR = '/Users/edu/Desktop/Pronto.IA/prompts/personas';
