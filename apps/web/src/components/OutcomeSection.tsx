@@ -1,6 +1,6 @@
 export function OutcomeSection() {
   return (
-    <section className="border-t border-border-subtle bg-night-800 py-20 text-neutral-50">
+    <section id="para-empresas" className="scroll-mt-20 border-t border-border-subtle bg-night-800 py-20 text-neutral-50 md:py-24">
       <div className="mx-auto max-w-container px-6">
         <div className="mx-auto max-w-2xl text-center">
           <span className="font-mono text-micro font-medium uppercase tracking-micro text-green-400">
@@ -15,7 +15,7 @@ export function OutcomeSection() {
         </div>
 
         {/* Metrics from Ane analysis */}
-        <div className="mt-12 grid gap-4 md:grid-cols-4">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           <div className="rounded-md bg-night-700 p-6">
             <div className="text-display-m font-medium text-green-400">160k</div>
             <div className="mt-1 text-body-s text-night-200">
