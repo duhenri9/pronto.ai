@@ -13,8 +13,12 @@
   "dependencies": {
     "@pronto-ia/auth": "workspace:*",
     "@pronto-ia/database": "workspace:*",
+    "@pronto-ia/events": "workspace:*",
     "@pronto-ia/types": "workspace:*",
+    "@pronto-ia/whatsapp": "workspace:*",
     "@sentry/nextjs": "^10.50.0",
+    "bullmq": "^5.13.0",
+    "ioredis": "^5.4.1",
     "lucide-react": "^0.460.0",
     "next": "^15.3.0",
     "react": "^19.1.0",
