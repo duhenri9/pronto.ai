@@ -1,9 +1,13 @@
 import { Rocket, Globe, Users, Shield, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { Nav } from '@/components/Nav';
+import { Footer } from '@/components/Footer';
 
 export default function SobrePage() {
   return (
-    <main className="min-h-screen bg-[#0A0E1A] text-white">
+    <div className="min-h-screen flex flex-col bg-[#0A0E1A] text-white">
+      <Nav />
+      <main className="flex-1">
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#00D97E]/5 to-transparent pointer-events-none" />
@@ -26,7 +30,7 @@ export default function SobrePage() {
         <div className="max-w-3xl mx-auto">
           <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-relaxed text-white/90">
             A revolução da IA não pode ser privilégio de grandes corporações. 
-            Enquanto o mundo avança, 15 milhões de meis estão ficando para trás. 
+            Enquanto o mundo avança, 15 milhões de MEIs estão ficando para trás.
             Nós existimos para mudar isso.
           </p>
           <p className="text-lg md:text-xl text-[#9DA1B4] mt-8 leading-relaxed">
@@ -111,6 +115,8 @@ export default function SobrePage() {
           </a>
         </div>
       </section>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

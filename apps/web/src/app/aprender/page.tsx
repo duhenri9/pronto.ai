@@ -4,6 +4,8 @@ import {
   Smartphone, Timer, Heart, Globe, BookOpen, Rocket
 } from 'lucide-react';
 import Link from 'next/link';
+import { Nav } from '@/components/Nav';
+import { Footer } from '@/components/Footer';
 
 const HERO_STATS = [
   { icon: Users, value: '1 milhão', label: 'de pessoas capacitadas até 2028' },
@@ -119,7 +121,9 @@ const STEPS = [
 
 export default function AprenderPage() {
   return (
-    <main className="min-h-screen bg-[#0A0E1A] text-white">
+    <div className="min-h-screen flex flex-col bg-[#0A0E1A] text-white">
+      <Nav />
+      <main className="flex-1">
       {/* ── Hero Section ── */}
       <section className="relative pt-32 pb-20 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#00D97E]/5 via-transparent to-transparent pointer-events-none" />
@@ -317,6 +321,8 @@ export default function AprenderPage() {
           Quero começar agora — é grátis
         </a>
       </section>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

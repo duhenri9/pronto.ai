@@ -3,7 +3,7 @@ import { LogoLight } from './LogoLight';
 
 export function Footer() {
   return (
-    <footer className="border-t border-border-subtle py-12">
+    <footer className="bg-[#0A0E1A] border-t border-[#1A2150] py-12">
       <div className="mx-auto flex max-w-container flex-col items-center justify-between gap-6 px-6 md:flex-row">
         <div className="flex items-center gap-6">
           <LogoLight />

@@ -112,7 +112,7 @@ export default function TeaserPage() {
                 color: '#9DA1B4',
                 lineHeight: 1.6,
               }}>
-                de meis no Brasil. 80% sem acesso a capacitação em IA.
+                de MEIs no Brasil. 80% sem acesso a capacitação em IA.
               </p>
             </div>
 
@@ -179,7 +179,7 @@ export default function TeaserPage() {
             fontWeight: 600,
             color: '#fff',
           }}>
-            Buscamos R$ 150.000 para o piloto com 1.000 meis, validação de métricas e certificação institucional.
+            Buscamos R$ 150.000 para o piloto com 1.000 MEIs, validação de métricas e certificação institucional.
           </p>
         </div>
 

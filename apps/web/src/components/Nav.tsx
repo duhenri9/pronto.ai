@@ -6,7 +6,7 @@ const WHATSAPP_URL =
 
 export function Nav() {
   return (
-    <nav className="fixed top-0 z-50 w-full border-b border-border-subtle bg-canvas/80 backdrop-blur-lg">
+    <nav className="sticky top-0 z-50 w-full bg-[#0A0E1A]/80 backdrop-blur-md border-b border-[#1A2150]">
       <div className="mx-auto flex max-w-container items-center justify-between px-6 py-4">
         <Link href="/" className="flex-shrink-0">
           <LogoLight />

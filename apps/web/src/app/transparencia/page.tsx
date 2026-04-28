@@ -30,8 +30,9 @@ const META_COLORS: Record<string, string> = {
 
 export default function TransparenciaPage() {
   return (
-    <main className="min-h-screen bg-[#0F1535] text-white/90 pt-24 pb-16">
+    <div className="min-h-screen flex flex-col bg-[#0A0E1A] text-white/90">
       <Nav />
+      <main className="flex-1 pt-24 pb-16">
       <div className="max-w-3xl mx-auto px-6">
         <h1 className="text-4xl font-bold mb-4">Transparência</h1>
         <p className="text-lg text-[#9DA1B4] mb-12">
@@ -89,7 +90,8 @@ export default function TransparenciaPage() {
           ))}
         </div>
       </div>
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 }

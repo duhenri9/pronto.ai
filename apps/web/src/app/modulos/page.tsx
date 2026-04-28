@@ -7,12 +7,14 @@ import {
   Timer, Star, Globe, Heart, BookOpen, ChevronDown, Rocket
 } from 'lucide-react';
 import Link from 'next/link';
+import { Nav } from '@/components/Nav';
+import { Footer } from '@/components/Footer';
 
 const HERO_STATS = [
   { icon: BookOpen, value: '4', label: 'Módulos completos' },
   { icon: Timer, value: '< 30 min', label: 'Por módulo' },
   { icon: Star, value: '100%', label: 'Grátis e vitalício' },
-  { icon: Users, value: '+15M', label: 'meis no Brasil' },
+  { icon: Users, value: '+15M', label: 'MEIs no Brasil' },
 ];
 
 const MODULOS = [
@@ -188,7 +190,9 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function ModulosPage() {
   return (
-    <main className="min-h-screen bg-[#0A0E1A] text-white">
+    <div className="min-h-screen flex flex-col bg-[#0A0E1A] text-white">
+      <Nav />
+      <main className="flex-1">
       {/* ── Hero Section ── */}
       <section className="relative pt-32 pb-20 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#00D97E]/5 via-transparent to-transparent pointer-events-none" />
@@ -439,6 +443,8 @@ export default function ModulosPage() {
           Quero começar agora — é grátis
         </a>
       </section>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
