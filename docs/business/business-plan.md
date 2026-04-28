@@ -7,8 +7,8 @@ conhecimentos, conectando as oportunidades e desafios da Inteligência Artificia
 ao dia a dia das pessoas. Começamos pelos MEIs brasileiros — 15 milhões de
 microempreendedores, 80% sem acesso a capacitação digital.
 
-Modelo freemium: MVP gratuito via WhatsApp, com plano Pro (R$ 29/mês)
-previsto para a fase 3. Potencial de impacto: 15 milhões de pessoas.
+Modelo freemium: Maria Free (gratuito vitalício) + Agentes Especializados pagos (R$ 29/mês).
+Upsell natural: Maria identifica necessidade e oferece especialista. Potencial de impacto: 15 milhões de pessoas.
 
 ## 2. Problema
 
@@ -51,10 +51,11 @@ Mentoria IA personalizada via WhatsApp com 4 verticais:
 
 | Fonte | Status | Detalhe |
 |-------|--------|---------|
+| Maria Free (gratuito vitalício) | Ativo | Upsell para agente especializado |
+| Agentes Especializados (R$ 29/mês) | Fase 3 | Bia (salão), Léo (food), Tião (serviço), Zé (tech) |
 | Doações (Pix) | Ativo | Tiers: Cafezinho, Apoio, Impacto |
-| B2B (para empresas) | [PREENCHER] | [PREENCHER: modelo de assinatura por funcionário?] |
-| Certificação | [PREENCHER] | [PREENCHER: certificado pago ao concluir trilha?] |
-| Marketplace | [PREENCHER] | [PREENCHER: conectar MEIs com ferramentas/serviços?] |
+| B2G (governo) | [PREENCHER] | Contratos municipais/estaduais |
+| B2B (SEBRAE/SENAC) | [PREENCHER] | Parcerias Sistema S |
 
 ### Projeção de receita
 [PREENCHER: cenário pessimista / realista / otimista para 12/24/36 meses]
