@@ -18,15 +18,15 @@ no celular que o MEI já usa. Sem app novo, sem login, sem complicação.
 ### Como Funciona
 1. Aluno envia "Oi Maria" no WhatsApp
 2. Maria identifica o ramo (beleza, alimentação, construção, tecnologia)
-3. Conecta com a especialista certa (Bia, Léo, Tião, Zé)
-4. Microlições diárias, no ritmo do aluno
-5. Certificado ao concluir a trilha
+3. Microlições diárias, no ritmo do aluno — grátis, vitalício
+4. Quando o aluno quer se aprofundar, Maria conecta com a especialista (Bia, Léo, Tião, Zé) — R$ 29/mês
 
 ### Diferencial
 WhatsApp-first — está onde o MEI já está
 Conversacional — a IA se adapta ao tom e ritmo do aluno
 Personalizado — cada vertical tem uma especialista própria
-Gratuito — sem cobrança no MVP
+Gratuito — Maria Free, vitalício, sem cobrança
+Upsell natural — agente especializado quando o aluno quer mais
 
 ### Métricas
 [PREENCHER — X alunos, Y mensagens, Z% engajamento]
