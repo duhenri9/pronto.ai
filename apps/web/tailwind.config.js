@@ -176,6 +176,9 @@ module.exports = {
       maxWidth: {
         container: '1280px',
       },
+      animation: {
+        'fade-in-up': 'fadeInUp 500ms both cubic-bezier(0.22, 1, 0.36, 1)',
+      },
     },
   },
   plugins: [],

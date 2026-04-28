@@ -1,6 +1,6 @@
 import { MariaAvatar } from '@/components/MariaAvatar';
 import { WhatsAppChat } from '@/components/WhatsAppChat';
-import { HowItWorks } from '@/components/HowItWorks';
+import { LearningJourney } from '@/components/LearningJourney';
 import { VerticalCards } from '@/components/VerticalCards';
 import { OutcomeSection } from '@/components/OutcomeSection';
 import { DonateSection } from '@/components/DonateSection';
@@ -54,7 +54,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Como funciona? ── */}
-      <HowItWorks />
+      <LearningJourney />
 
       {/* ── Verticals ── */}
       <section
