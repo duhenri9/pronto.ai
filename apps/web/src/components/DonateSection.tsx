@@ -77,7 +77,7 @@ export function DonateSection() {
 
   const handleDonate = async () => {
     const amount = selectedAmount ?? Math.round(parseFloat(customAmount) * 100);
-    if (!amount || amount < 500 || amount > 250000) return;
+    if (!amount || amount < 500 || amount > 10000000) return;
 
     setState('loading');
     try {
@@ -122,7 +122,7 @@ export function DonateSection() {
     setState('selecting');
   };
 
-  const canDonate = selectedAmount !== null || (customAmount && parseFloat(customAmount) >= 5 && parseFloat(customAmount) <= 2500);
+  const canDonate = selectedAmount !== null || (customAmount && parseFloat(customAmount) >= 5 && parseFloat(customAmount) <= 100000);
 
   const buttonText = selectedAmount
     ? `Doar ${formatBRL(selectedAmount)} via Pix`
@@ -224,7 +224,7 @@ export function DonateSection() {
                     <input
                       type="number"
                       min="5"
-                      max="2500"
+                      max="100000"
                       step="1"
                       value={customAmount}
                       onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const MIN_AMOUNT = 500; // R$ 5,00 em centavos
-const MAX_AMOUNT = 250000; // R$ 2.500,00 em centavos
+const MAX_AMOUNT = 10000000; // R$ 100.000,00 em centavos
 
 export async function POST(request: NextRequest) {
   try {
