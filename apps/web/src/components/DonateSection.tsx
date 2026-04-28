@@ -170,7 +170,7 @@ export function DonateSection() {
                   Cada real capacita um MEI brasileiro para a era da IA
                 </h3>
                 <p className="text-body-s text-white/70 leading-relaxed">
-                  O Pronto.IA treina MEIs de graça, no WhatsApp, sem complicação. Seu apoio paga os servidores, a IA e a equipe que faz isso acontecer.
+                  A plataforma Pronto.IA treina MEIs de graça, no WhatsApp, sem complicação. Seu apoio paga os servidores, a IA e a equipe que faz isso acontecer de verdade.
                 </p>
               </div>
             )}
