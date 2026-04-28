@@ -557,3 +557,162 @@ describe('Core Loop — full flow (webhook → inbound → outbound)', () => {
     expect(outboundData.messageText).toContain('meu bem');
   });
 });
+
+// ============================================================
+// ADDITIONAL COVERAGE TESTS
+// ============================================================
+
+describe('processInboundMessage — fallback uses persona-specific message', () => {
+  it('uses Bia fallback when persona is bia', async () => {
+    const biaFallback = 'Aqui deu uma travada rápida, amiga. Me fala de novo, por favor?';
+    const enqueueOutbound = vi.fn().mockResolvedValue(undefined);
+
+    const result = await processInboundMessage(makeInboundJobData(), {
+      findProcessedEvent: vi.fn().mockResolvedValue([]),
+      markProcessed: vi.fn().mockResolvedValue(undefined),
+      findSessionByPhone: vi.fn().mockResolvedValue({
+        id: MOCK_SESSION_ID,
+        userId: MOCK_USER_ID,
+        currentPersona: 'bia',
+        messageCount: 5,
+      }),
+      createUser: vi.fn(),
+      createSession: vi.fn(),
+      findEnrollment: vi.fn().mockResolvedValue(null),
+      saveInboundMessage: vi.fn().mockResolvedValue(undefined),
+      getConversationHistory: vi.fn().mockResolvedValue([]),
+      llmChat: vi.fn().mockRejectedValue(new Error('timeout')),
+      saveLLMCall: vi.fn(),
+      updateSession: vi.fn(),
+      enqueueOutbound,
+      emitEvent: vi.fn(),
+      loadFallbackMessage: vi.fn().mockReturnValue(biaFallback),
+    });
+
+    expect(result.status).toBe('fallback');
+    expect(result.fallbackMessage).toBe(biaFallback);
+    expect(result.persona).toBe('bia');
+  });
+});
+
+describe('processInboundMessage — different messages are not deduplicated', () => {
+  it('processes second message with different messageId', async () => {
+    const mockLLMResult = makeMockLLMResult();
+
+    // First message — no prior event
+    const result1 = await processInboundMessage(
+      makeInboundJobData({ messageId: 'msg_001' }),
+      {
+        findProcessedEvent: vi.fn().mockResolvedValue([]),
+        markProcessed: vi.fn().mockResolvedValue(undefined),
+        findSessionByPhone: vi.fn().mockResolvedValue({
+          id: MOCK_SESSION_ID,
+          userId: MOCK_USER_ID,
+          currentPersona: 'maria',
+          messageCount: 3,
+        }),
+        createUser: vi.fn(),
+        createSession: vi.fn(),
+        findEnrollment: vi.fn().mockResolvedValue(null),
+        saveInboundMessage: vi.fn().mockResolvedValue(undefined),
+        getConversationHistory: vi.fn().mockResolvedValue([]),
+        llmChat: vi.fn().mockResolvedValue(mockLLMResult),
+        saveLLMCall: vi.fn().mockResolvedValue({ id: 'llm-001' }),
+        updateSession: vi.fn().mockResolvedValue(undefined),
+        enqueueOutbound: vi.fn().mockResolvedValue(undefined),
+        emitEvent: vi.fn(),
+        loadFallbackMessage: vi.fn().mockReturnValue('Pode repetir?'),
+      },
+    );
+    expect(result1.status).toBe('processed');
+
+    // Second message — different ID, not a duplicate
+    const result2 = await processInboundMessage(
+      makeInboundJobData({ messageId: 'msg_002', messageText: 'Como usar IA?' }),
+      {
+        findProcessedEvent: vi.fn().mockResolvedValue([]),
+        markProcessed: vi.fn().mockResolvedValue(undefined),
+        findSessionByPhone: vi.fn().mockResolvedValue({
+          id: MOCK_SESSION_ID,
+          userId: MOCK_USER_ID,
+          currentPersona: 'maria',
+          messageCount: 4,
+        }),
+        createUser: vi.fn(),
+        createSession: vi.fn(),
+        findEnrollment: vi.fn().mockResolvedValue(null),
+        saveInboundMessage: vi.fn().mockResolvedValue(undefined),
+        getConversationHistory: vi.fn().mockResolvedValue([]),
+        llmChat: vi.fn().mockResolvedValue(mockLLMResult),
+        saveLLMCall: vi.fn().mockResolvedValue({ id: 'llm-002' }),
+        updateSession: vi.fn().mockResolvedValue(undefined),
+        enqueueOutbound: vi.fn().mockResolvedValue(undefined),
+        emitEvent: vi.fn(),
+        loadFallbackMessage: vi.fn().mockReturnValue('Pode repetir?'),
+      },
+    );
+    expect(result2.status).toBe('processed');
+  });
+});
+
+describe('processInboundMessage — enrollment context passed to LLM', () => {
+  it('includes lessonId when user has active enrollment', async () => {
+    const mockLLMResult = makeMockLLMResult();
+    const llmChat = vi.fn().mockResolvedValue(mockLLMResult);
+
+    await processInboundMessage(makeInboundJobData(), {
+      findProcessedEvent: vi.fn().mockResolvedValue([]),
+      markProcessed: vi.fn().mockResolvedValue(undefined),
+      findSessionByPhone: vi.fn().mockResolvedValue({
+        id: MOCK_SESSION_ID,
+        userId: MOCK_USER_ID,
+        currentPersona: 'maria',
+        messageCount: 2,
+      }),
+      createUser: vi.fn(),
+      createSession: vi.fn(),
+      findEnrollment: vi.fn().mockResolvedValue({ currentLessonId: 'lesson-42' }),
+      saveInboundMessage: vi.fn().mockResolvedValue(undefined),
+      getConversationHistory: vi.fn().mockResolvedValue([]),
+      llmChat,
+      saveLLMCall: vi.fn().mockResolvedValue({ id: 'llm-001' }),
+      updateSession: vi.fn().mockResolvedValue(undefined),
+      enqueueOutbound: vi.fn().mockResolvedValue(undefined),
+      emitEvent: vi.fn(),
+      loadFallbackMessage: vi.fn().mockReturnValue('Pode repetir?'),
+    });
+
+    const callArgs = llmChat.mock.calls[0][0];
+    expect(callArgs.lessonId).toBe('lesson-42');
+  });
+
+  it('passes undefined lessonId when no enrollment', async () => {
+    const mockLLMResult = makeMockLLMResult();
+    const llmChat = vi.fn().mockResolvedValue(mockLLMResult);
+
+    await processInboundMessage(makeInboundJobData(), {
+      findProcessedEvent: vi.fn().mockResolvedValue([]),
+      markProcessed: vi.fn().mockResolvedValue(undefined),
+      findSessionByPhone: vi.fn().mockResolvedValue({
+        id: MOCK_SESSION_ID,
+        userId: MOCK_USER_ID,
+        currentPersona: 'maria',
+        messageCount: 2,
+      }),
+      createUser: vi.fn(),
+      createSession: vi.fn(),
+      findEnrollment: vi.fn().mockResolvedValue(null),
+      saveInboundMessage: vi.fn().mockResolvedValue(undefined),
+      getConversationHistory: vi.fn().mockResolvedValue([]),
+      llmChat,
+      saveLLMCall: vi.fn().mockResolvedValue({ id: 'llm-001' }),
+      updateSession: vi.fn().mockResolvedValue(undefined),
+      enqueueOutbound: vi.fn().mockResolvedValue(undefined),
+      emitEvent: vi.fn(),
+      loadFallbackMessage: vi.fn().mockReturnValue('Pode repetir?'),
+    });
+
+    const callArgs = llmChat.mock.calls[0][0];
+    expect(callArgs.lessonId).toBeUndefined();
+  });
+});

@@ -1,11 +1,11 @@
+import { MariaAvatar } from './MariaAvatar';
+
 export function WhatsAppChat() {
   return (
     <div className="w-full max-w-sm rounded-lg border border-border-subtle bg-sunken p-4">
       {/* Chat header */}
       <div className="flex items-center gap-3 border-b border-border-subtle pb-3 mb-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-green-900 font-medium text-body-s">
-          M
-        </div>
+        <MariaAvatar size={32} />
         <div>
           <div className="text-body-s font-medium">Maria</div>
           <div className="text-micro text-green-600">online · respondendo</div>
