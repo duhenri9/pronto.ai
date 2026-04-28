@@ -47,10 +47,10 @@ export default function TransparenciaPage() {
             23 pessoas já apoiaram. Junte-se a elas.
           </p>
           <div className="mt-4 mx-auto h-2 max-w-xs rounded-full bg-sunken overflow-hidden">
-            <div className="h-full rounded-full bg-green-400" style={{ width: '4.5%' }} />
+            <div className="h-full rounded-full bg-green-400" style={{ width: '49.4%' }} />
           </div>
           <p className="mt-2 font-mono text-micro text-text-tertiary">
-            4,5% da meta 1 (R$ 5.000/mês)
+            49,4% da meta 1 (R$ 5.000/mês)
           </p>
         </div>
 
