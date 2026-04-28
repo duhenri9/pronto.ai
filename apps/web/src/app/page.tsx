@@ -1,4 +1,5 @@
 import { MariaAvatar } from '@/components/MariaAvatar';
+import { MariaTip } from '@/components/MariaTip';
 import { WhatsAppChat } from '@/components/WhatsAppChat';
 import { LearningJourney } from '@/components/LearningJourney';
 import { VerticalCards } from '@/components/VerticalCards';
@@ -84,7 +85,12 @@ export default function HomePage() {
       {/* ── CTA ── */}
       <section className="border-t border-border-subtle py-20 md:py-24">
         <div className="mx-auto max-w-container px-6 text-center">
-          <MariaAvatar size={96} />
+          <div className="relative flex flex-col items-center">
+            <div className="mb-4">
+              <MariaTip />
+            </div>
+            <MariaAvatar size={96} />
+          </div>
           <h2 className="mt-8 text-display-m tracking-display text-neutral-900">
             Bora começar?
           </h2>
