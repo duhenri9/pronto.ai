@@ -35,9 +35,12 @@ export function OutcomeSection() {
             </div>
           </div>
           <div className="rounded-md bg-green-500 p-6">
-            <div className="text-display-m font-medium text-green-900">+R$ 1.240</div>
+            <div className="text-display-m font-medium text-green-900">30%</div>
             <div className="mt-1 text-body-s text-green-800">
-              certificado de outcome — reais a mais no fim do mês
+              aumento médio de eficiência operacional em empresas que implementam IA
+            </div>
+            <div className="mt-2 text-micro text-green-700">
+              Sebrae + FGV IBRE + Google, 2026
             </div>
           </div>
         </div>
