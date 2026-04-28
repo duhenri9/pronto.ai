@@ -159,7 +159,7 @@ export class ProntoLLMClient {
     // Claude Haiku 4.5: $0.80/1M input, $4.00/1M output
     // Claude Sonnet 4.5: $3.00/1M input, $15.00/1M output
     // Using USD 1 ≈ BRL 5.5 for estimation
-    const USD_TO_BRL_CENTS = 550; // 1 USD = 550 centavos BRL
+    const USD_TO_BRL_CENTS = parseInt(process.env.USD_TO_BRL_CENTS ?? '550', 10);
 
     const rates =
       model.includes('sonnet')
