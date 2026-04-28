@@ -26,7 +26,7 @@ export default function SobrePage() {
         <div className="max-w-3xl mx-auto">
           <p className="text-3xl md:text-4xl font-light leading-relaxed text-white/90">
             A revolução da IA não pode ser privilégio de grandes corporações. 
-            Enquanto o mundo avança, 15 milhões de MEIs estão ficando para trás. 
+            Enquanto o mundo avança, 15 milhões de meis estão ficando para trás. 
             Nós existimos para mudar isso.
           </p>
           <p className="text-xl text-[#9DA1B4] mt-8 leading-relaxed">

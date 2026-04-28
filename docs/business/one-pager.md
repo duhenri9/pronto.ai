@@ -8,7 +8,7 @@ das pessoas — começando por quem mais precisa: o MEI brasileiro.
 **Contato:** [PREENCHER EMAIL]
 
 ### Problema
-15 milhões de MEIs no Brasil. 80% sem acesso a capacitação em IA.
+15 milhões de meis no Brasil. 80% sem acesso a capacitação em IA.
 A economia digital avança, mas o microempreendedor fica para trás.
 
 ### Solução
