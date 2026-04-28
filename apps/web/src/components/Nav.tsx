@@ -14,6 +14,12 @@ export function Nav() {
         {/* Desktop links */}
         <div className="hidden items-center gap-8 md:flex">
           <Link
+            href="/#trilhas"
+            className="text-body-s text-[#9DA1B4] hover:text-white transition-duration-fast transition-colors"
+          >
+            trilhas
+          </Link>
+          <Link
             href="/modulos"
             className="text-body-s text-[#9DA1B4] hover:text-white transition-duration-fast transition-colors"
           >

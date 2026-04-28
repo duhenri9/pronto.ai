@@ -21,6 +21,9 @@ export function Footer() {
           <Link href="/modulos" className="text-body-s text-[#9DA1B4] hover:text-white transition-colors">
             módulos
           </Link>
+          <a href="/#trilhas" className="text-body-s text-[#9DA1B4] hover:text-white transition-colors">
+            trilhas
+          </a>
           <a href="#para-empresas" className="text-body-s text-[#9DA1B4] hover:text-white transition-colors">
             para empresas
           </a>
