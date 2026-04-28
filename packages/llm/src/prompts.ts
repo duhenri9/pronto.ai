@@ -4,7 +4,7 @@
 // Reads versioned persona prompts from the prompts/ directory.
 // Prompts are markdown files with YAML frontmatter.
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 export interface LoadedPrompt {
@@ -75,6 +75,9 @@ export function clearPromptCache(): void {
 }
 
 export function listAvailablePersonas(): string[] {
-  const validPersonas = ['maria', 'bia', 'leo', 'tiao', 'evaluator'];
-  return validPersonas.filter((p) => existsSync(join(PROMPTS_DIR, `${p}.md`)));
+  if (!existsSync(PROMPTS_DIR)) return [];
+  const files = readdirSync(PROMPTS_DIR);
+  return files
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => f.replace('.md', ''));
 }
