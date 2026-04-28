@@ -4,7 +4,9 @@ import { WhatsAppChat } from '@/components/WhatsAppChat';
 import { HowItWorks } from '@/components/HowItWorks';
 import { VerticalCards } from '@/components/VerticalCards';
 import { OutcomeSection } from '@/components/OutcomeSection';
+import { DonateSection } from '@/components/DonateSection';
 import { Footer } from '@/components/Footer';
+import Link from 'next/link';
 
 const WHATSAPP_URL =
   'https://wa.me/5511999999999?text=Oi%20Maria!%20Quero%20começar';
@@ -30,6 +32,18 @@ export default function HomePage() {
             >
               para empresas
             </a>
+            <Link
+              href="/sobre"
+              className="text-body-s text-text-secondary hover:text-text-primary transition-duration-fast transition-colors"
+            >
+              sobre
+            </Link>
+            <Link
+              href="/transparencia"
+              className="text-body-s text-text-secondary hover:text-text-primary transition-duration-fast transition-colors"
+            >
+              transparência
+            </Link>
             <a
               href={WHATSAPP_URL}
               className="rounded-md bg-green-500 px-4 py-2 text-body-s font-medium text-green-900 hover:bg-green-400 transition-duration-fast transition-colors"
@@ -138,6 +152,7 @@ export default function HomePage() {
       </section>
 
       <Footer />
+      <DonateSection />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { LogoLight } from './LogoLight';
 
 export function Footer() {
@@ -10,7 +11,13 @@ export function Footer() {
             Pronto.IA · WM3 Digital · 2026
           </span>
         </div>
-        <div className="flex gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
+          <Link href="/sobre" className="text-body-s text-text-secondary hover:text-text-primary transition-colors">
+            sobre
+          </Link>
+          <Link href="/transparencia" className="text-body-s text-text-secondary hover:text-text-primary transition-colors">
+            transparência
+          </Link>
           <a href="#trilhas" className="text-body-s text-text-secondary hover:text-text-primary transition-colors">
             trilhas
           </a>
