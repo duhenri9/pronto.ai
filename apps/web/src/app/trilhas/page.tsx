@@ -359,7 +359,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-export default function ModulosPage() {
+export default function TrilhasPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0A0E1A] text-white">
       <Nav />
@@ -372,14 +372,13 @@ export default function ModulosPage() {
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-              Módulos e{' '}
+              Trilhas de{' '}
               <span className="bg-gradient-to-r from-[#00D97E] to-[#00B4D8] bg-clip-text text-transparent">
                 Conteúdo
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-[#9DA1B4] max-w-2xl mx-auto leading-relaxed">
-              Do básico ao aplicado. Cada módulo foi pensado pra você que quer
-              dominar a IA sem complicação.
+              Drops de Conhecimento — pílulas diretas de IA para o seu negócio.
             </p>
           </div>
 
@@ -468,6 +467,11 @@ export default function ModulosPage() {
 
                     {/* Conteúdo */}
                     <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#00D97E]/10 border border-[#00D97E]/20 text-[#00D97E]">
+                          Drop #{modulo.number}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-3 mb-2 flex-wrap">
                         <h3 className="text-2xl font-semibold text-white/90">
                           {modulo.title}
@@ -535,6 +539,11 @@ export default function ModulosPage() {
                       {trilha.number}
                     </span>
                     <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#00D97E]/10 border border-[#00D97E]/20 text-[#00D97E]">
+                          Drop #{trilha.number}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-3 mb-1 flex-wrap">
                         <trilha.icon className={`w-8 h-8 ${c.text}`} />
                         <h3 className="text-2xl font-semibold text-white/90">

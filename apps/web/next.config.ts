@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
     '@pronto-ia/llm',
   ],
   devIndicators: false,
+  async redirects() {
+    return [
+      {
+        source: '/modulos',
+        destination: '/trilhas',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, { silent: true });
