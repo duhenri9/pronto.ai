@@ -1,17 +1,70 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart, X, Copy, Check, Sprout } from 'lucide-react';
+import { Heart, X, Copy, Check, Coffee, Rocket, Shield, Wallet, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
-const DONATION_VALUES = [
-  { label: 'R$ 10', cents: 1000 },
-  { label: 'R$ 25', cents: 2500 },
-  { label: 'R$ 50', cents: 5000 },
-  { label: 'R$ 100', cents: 10000 },
-];
+/* ── Tiers de valor ── */
+const VALUE_TIERS = [
+  {
+    id: 'cafezinho',
+    label: 'Cafezinho',
+    icon: Coffee,
+    accent: '#F59E0B',
+    values: [
+      { label: 'R$ 5', cents: 500 },
+      { label: 'R$ 10', cents: 1000 },
+      { label: 'R$ 20', cents: 2000 },
+    ],
+  },
+  {
+    id: 'apoio',
+    label: 'Apoio',
+    icon: Shield,
+    accent: '#00D97E',
+    values: [
+      { label: 'R$ 50', cents: 5000 },
+      { label: 'R$ 100', cents: 10000 },
+      { label: 'R$ 200', cents: 20000 },
+    ],
+  },
+  {
+    id: 'impacto',
+    label: 'Impacto',
+    icon: Rocket,
+    accent: '#8B5CF6',
+    values: [
+      { label: 'R$ 500', cents: 50000 },
+      { label: 'R$ 1.000', cents: 100000 },
+      { label: 'R$ 2.500', cents: 250000 },
+    ],
+  },
+] as const;
 
 type DonationState = 'idle' | 'selecting' | 'loading' | 'success' | 'error';
+
+function QRCodePlaceholder() {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="h-36 w-36 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+        <div className="grid grid-cols-5 gap-[3px] p-3">
+          {Array.from({ length: 25 }).map((_, i) => (
+            <div
+              key={i}
+              className={`h-2 w-2 rounded-[2px] ${Math.random() > 0.4 ? 'bg-white/80' : 'bg-transparent'}`}
+            />
+          ))}
+        </div>
+      </div>
+      <p className="font-mono text-micro text-[#757994]">QR Code Pix</p>
+    </div>
+  );
+}
+
+function formatBRL(cents: number): string {
+  const reais = cents / 100;
+  return reais.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
 
 export function DonateSection() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +77,7 @@ export function DonateSection() {
 
   const handleDonate = async () => {
     const amount = selectedAmount ?? Math.round(parseFloat(customAmount) * 100);
-    if (!amount || amount < 500 || amount > 100000) return;
+    if (!amount || amount < 500 || amount > 250000) return;
 
     setState('loading');
     try {
@@ -69,7 +122,13 @@ export function DonateSection() {
     setState('selecting');
   };
 
-  const canDonate = selectedAmount !== null || (customAmount && parseFloat(customAmount) >= 5 && parseFloat(customAmount) <= 1000);
+  const canDonate = selectedAmount !== null || (customAmount && parseFloat(customAmount) >= 5 && parseFloat(customAmount) <= 2500);
+
+  const buttonText = selectedAmount
+    ? `Doar ${formatBRL(selectedAmount)} via Pix`
+    : customAmount && parseFloat(customAmount) >= 5
+      ? `Doar R$ ${parseFloat(customAmount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} via Pix`
+      : 'Escolha um valor';
 
   return (
     <>
@@ -93,7 +152,7 @@ export function DonateSection() {
 
           {/* Modal */}
           <div
-            className={`relative w-[95%] sm:w-full sm:max-w-[440px] bg-[#0F1535] rounded-t-2xl sm:rounded-2xl p-6 sm:p-8 shadow-elev-3 max-h-[95vh] overflow-y-auto transition-all duration-200 ${isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+            className={`relative w-[95%] sm:w-full sm:max-w-[480px] bg-[#0F1535] rounded-t-2xl sm:rounded-2xl p-6 sm:p-8 shadow-elev-3 max-h-[95vh] overflow-y-auto transition-all duration-200 ${isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
           >
             {/* Close button */}
             <button
@@ -107,72 +166,91 @@ export function DonateSection() {
             {/* ── CTA emocional ── */}
             {state === 'selecting' && (
               <div className="mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Sprout size={20} className="text-[#00D97E]" />
-                  <h3 className="text-heading-s font-medium text-white/90">Por que apoiar?</h3>
-                </div>
+                <h3 className="text-heading-s font-medium text-white/90 mb-2">
+                  Cada real capacita um MEI brasileiro para a era da IA
+                </h3>
                 <p className="text-body-s text-white/70 leading-relaxed">
-                  O Pronto.IA capacita MEIs brasileiros para a era da IA — de graça, no WhatsApp, sem complicação.
-                </p>
-                <p className="mt-3 text-body-s text-white/70 leading-relaxed">
-                  Cada real mantém a Maria no ar para quem mais precisa. Seu apoio paga os servidores, a IA e a equipe que faz isso acontecer.
+                  O Pronto.IA treina MEIs de graça, no WhatsApp, sem complicação. Seu apoio paga os servidores, a IA e a equipe que faz isso acontecer.
                 </p>
               </div>
             )}
 
             {/* ── Selecting state ── */}
             {state === 'selecting' && (
-              <>
-                <div className="border-t border-white/10 pt-6">
-                  <p className="font-mono text-micro uppercase tracking-micro text-[#757994] mb-3">
-                    Escolha o valor
-                  </p>
+              <div className="border-t border-white/10 pt-6">
+                <p className="font-mono text-micro uppercase tracking-micro text-[#757994] mb-4">
+                  Escolha o valor
+                </p>
 
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    {DONATION_VALUES.map((v) => (
-                      <button
-                        key={v.cents}
-                        onClick={() => { setSelectedAmount(v.cents); setCustomAmount(''); }}
-                        className={`rounded-lg border p-3 text-heading-s font-medium transition-all duration-fast ease-out ${
-                          selectedAmount === v.cents
-                            ? 'border-[#00D97E] bg-[#00D97E]/10 text-[#00D97E]'
-                            : 'border-white/10 bg-[#1A2150] text-white/90 hover:scale-105 hover:border-[#00D97E]/50'
-                        }`}
-                      >
-                        {v.label}
-                      </button>
-                    ))}
+                {/* Value tiers */}
+                <div className="space-y-5 mb-5">
+                  {VALUE_TIERS.map((tier) => {
+                    const Icon = tier.icon;
+                    return (
+                      <div key={tier.id}>
+                        <div className="flex items-center gap-2 mb-2.5">
+                          <Icon size={16} style={{ color: tier.accent }} />
+                          <span className="text-caption font-medium text-white/80">{tier.label}</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          {tier.values.map((v) => (
+                            <button
+                              key={v.cents}
+                              onClick={() => { setSelectedAmount(v.cents); setCustomAmount(''); }}
+                              className={`rounded-lg border p-3 text-body-s font-medium transition-all duration-fast ease-out ${
+                                selectedAmount === v.cents
+                                  ? 'border-transparent text-white shadow-elev-1'
+                                  : 'border-white/10 bg-[#1A2150] text-white/80 hover:scale-105 hover:border-white/25'
+                              }`}
+                              style={selectedAmount === v.cents ? { backgroundColor: tier.accent, color: tier.accent === '#F59E0B' ? '#0F1535' : '#fff' } : undefined}
+                            >
+                              {v.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Custom value */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <Wallet size={16} className="text-[#757994]" />
+                    <span className="text-caption font-medium text-white/80">Outro valor</span>
                   </div>
-
-                  <div className="mb-6">
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body-s text-[#757994]">R$</span>
                     <input
                       type="number"
                       min="5"
-                      max="1000"
+                      max="2500"
                       step="1"
                       value={customAmount}
                       onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
-                      placeholder="Outro valor: R$"
-                      className="w-full rounded-lg border border-[#4D5274] bg-[#252B54] px-4 py-3 text-body-s text-white placeholder:text-[#757994] focus:border-[#00D97E] focus:outline-none transition-colors"
+                      placeholder="0,00"
+                      className="w-full rounded-lg border border-[#4D5274] bg-[#252B54] pl-11 pr-4 py-3 text-body-s text-white placeholder:text-[#757994] focus:border-[#00D97E] focus:outline-none transition-colors"
                     />
                   </div>
-
-                  <button
-                    onClick={handleDonate}
-                    disabled={!canDonate}
-                    className="w-full rounded-lg bg-[#00D97E] py-3.5 text-body-m font-medium text-[#0F1535] hover:scale-[1.02] transition-all duration-fast ease-out disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  >
-                    Doar via Pix
-                  </button>
-
-                  <p className="mt-4 text-center text-micro text-[#757994]">
-                    Sua doação é segura e transparente.{' '}
-                    <Link href="/transparencia" className="text-[#00D97E] hover:underline" onClick={handleClose}>
-                      Veja como usamos cada real →
-                    </Link>
-                  </p>
                 </div>
-              </>
+
+                {/* Donate button */}
+                <button
+                  onClick={handleDonate}
+                  disabled={!canDonate}
+                  className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#00D97E] py-3.5 text-body-m font-medium text-[#0F1535] hover:scale-[1.02] transition-all duration-fast ease-out disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  {buttonText}
+                  {canDonate && <ArrowRight size={16} />}
+                </button>
+
+                <p className="mt-4 text-center text-micro text-[#757994]">
+                  Sua doação é segura e transparente.{' '}
+                  <Link href="/transparencia" className="text-[#00D97E] hover:underline" onClick={handleClose}>
+                    Veja como usamos cada real →
+                  </Link>
+                </p>
+              </div>
             )}
 
             {/* ── Loading ── */}
@@ -194,7 +272,13 @@ export function DonateSection() {
                   Você ajuda a capacitar o Brasil para a era da IA.
                 </p>
 
-                <div className="mt-5 w-full rounded-lg bg-[#1A2150] p-4">
+                {/* QR Code placeholder */}
+                <div className="mt-5">
+                  <QRCodePlaceholder />
+                </div>
+
+                {/* Copia-e-cola */}
+                <div className="mt-4 w-full rounded-lg bg-[#1A2150] p-4">
                   <p className="font-mono text-micro uppercase tracking-micro text-[#757994] mb-2">
                     Código copia-e-cola
                   </p>
