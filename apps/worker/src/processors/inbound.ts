@@ -7,16 +7,14 @@
 
 import { Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
-import { eq } from 'drizzle-orm';
-
-import { db } from '@pronto-ia/database';
+import { db, eq, desc } from '@pronto-ia/database';
 import {
   users,
   whatsappSessions,
   whatsappMessages,
   llmCalls,
   enrollments,
-  lessonProgress,
+  processedEvents,
 } from '@pronto-ia/database';
 import { ProntoLLMClient } from '@pronto-ia/llm';
 import { getLLMClient } from '@pronto-ia/llm';
@@ -79,9 +77,12 @@ export const inboundWorker = new Worker<InboundJobData>(
       .select()
       .from(whatsappMessages)
       .where(eq(whatsappMessages.sessionId, sessionId))
+      .orderBy(desc(whatsappMessages.createdAt))
       .limit(10);
 
+    // Reverse to chronological order (oldest first) for LLM context
     const chatHistory: ChatMessage[] = recentMessages
+      .reverse()
       .filter((m) => m.textContent != null)
       .map((m) => ({
         role: m.direction === 'inbound' ? 'user' : 'assistant',
