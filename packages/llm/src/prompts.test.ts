@@ -19,7 +19,7 @@ describe('loadPrompt — Maria', () => {
     const prompt = loadPrompt('maria');
     expect(prompt.meta.persona).toBe('maria');
     expect(prompt.meta.name).toBe('Maria');
-    expect(prompt.meta.role).toBe('host');
+    expect(prompt.meta.role).toBe('mentora generalista');
     expect(prompt.meta.vertical).toBe('all');
     expect(prompt.meta.model).toBe('claude-haiku-4-5-20251001');
     expect(prompt.meta.language).toBe('pt-BR');
@@ -28,7 +28,7 @@ describe('loadPrompt — Maria', () => {
   it('loads Maria prompt with fallbackMessage', () => {
     const prompt = loadPrompt('maria');
     expect(prompt.meta.fallbackMessage).toBe(
-      'Me perdi um pouco aqui, meu bem. Pode repetir o que você disse? Quero ter certeza que entendi direitinho.',
+      'Deu um probleminha técnico aqui. Pode mandar de novo?',
     );
   });
 

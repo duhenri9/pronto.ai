@@ -289,7 +289,7 @@ describe('processInboundMessage — new user/session creation', () => {
 describe('processInboundMessage — LLM failure → fallback', () => {
   it('enqueues fallback message when LLM call fails', async () => {
     const enqueueOutbound = vi.fn().mockResolvedValue(undefined);
-    const fallbackMessage = 'Me perdi um pouco aqui, meu bem. Pode repetir?';
+    const fallbackMessage = 'Deu um probleminha técnico aqui. Pode mandar de novo?';
 
     const result = await processInboundMessage(makeInboundJobData(), {
       findProcessedEvent: vi.fn().mockResolvedValue([]),
@@ -525,7 +525,7 @@ describe('Core Loop — full flow (webhook → inbound → outbound)', () => {
 
     // Inbound phase with LLM failure
     const enqueueOutbound = vi.fn().mockResolvedValue(undefined);
-    const fallbackMessage = 'Me perdi um pouco aqui, meu bem. Pode repetir?';
+    const fallbackMessage = 'Deu um probleminha técnico aqui. Pode mandar de novo?';
 
     const inboundResult = await processInboundMessage(jobData, {
       findProcessedEvent: vi.fn().mockResolvedValue([]),
@@ -554,7 +554,7 @@ describe('Core Loop — full flow (webhook → inbound → outbound)', () => {
 
     // The outbound fallback should have Maria's specific tone
     const outboundData = enqueueOutbound.mock.calls[0][1] as OutboundJobData;
-    expect(outboundData.messageText).toContain('meu bem');
+    expect(outboundData.messageText).toContain('Pode mandar de novo?');
   });
 });
 

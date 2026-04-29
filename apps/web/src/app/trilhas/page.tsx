@@ -344,7 +344,7 @@ const FAQ = [
   },
   {
     q: '"A Maria é um robô? Vai me julgar?"',
-    a: 'A Maria é uma mentora virtual. Ela te ouve, te respeita e te ajuda sem julgar. Nunca vai te chamar de burro ou dizer que sua pergunta é boba. Tô aqui pra ajudar, meu bem.',
+    a: 'A Maria é uma mentora virtual. Ela te ouve, te respeita e te ajuda sem julgar. Nunca vai te chamar de burro ou dizer que sua pergunta é boba. Tô aqui pra ajudar.',
   },
 ];
 

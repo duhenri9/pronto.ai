@@ -479,7 +479,7 @@ describe('E2E: Full pipeline — Z-API webhook → inbound → outbound', () => 
     const jobData = enqueueJob.mock.calls[0][1];
 
     // Inbound with LLM failure
-    const fallbackMessage = 'Me perdi um pouco aqui, meu bem. Pode repetir?';
+    const fallbackMessage = 'Deu um probleminha técnico aqui. Pode mandar de novo?';
     const enqueueOutbound = vi.fn().mockResolvedValue(undefined);
 
     const inboundResult = await processInboundMessage(jobData, makeInboundDeps({
@@ -491,7 +491,7 @@ describe('E2E: Full pipeline — Z-API webhook → inbound → outbound', () => 
     expect(inboundResult.status).toBe('fallback');
 
     const fallbackOutboundData = enqueueOutbound.mock.calls[0][1] as OutboundJobData;
-    expect(fallbackOutboundData.messageText).toContain('meu bem');
+    expect(fallbackOutboundData.messageText).toContain('Pode mandar de novo?');
 
     // Outbound sends fallback message
     const sendMessage = vi.fn().mockResolvedValue({
@@ -507,7 +507,7 @@ describe('E2E: Full pipeline — Z-API webhook → inbound → outbound', () => 
     });
 
     expect(outboundResult.status).toBe('sent');
-    expect(sendMessage.mock.calls[0][1]).toContain('meu bem');
+    expect(sendMessage.mock.calls[0][1]).toContain('Pode mandar de novo?');
   });
 
   it('completes full pipeline for new user (no existing session)', async () => {
