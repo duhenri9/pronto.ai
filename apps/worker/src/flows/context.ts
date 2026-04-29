@@ -89,20 +89,30 @@ export async function buildDynamicContext(options: BuildContextOptions): Promise
     : '';
 
   return {
-    preferred_name: user.displayName ?? user.name,
-    lifecycle_state: user.lifecycleState,
+    preferred_name: user.displayName ?? user.name ?? 'amiga',
+    lifecycle_state: user.lifecycleState ?? 'provisional',
     pending_action: user.pendingAction ?? '',
-    vertical: user.vertical ?? '',
-    business_context: businessContext,
+    vertical: user.vertical ?? 'outro',
+    business_context: businessContext || '{}',
     preferred_contact_window: user.preferredContactWindow ?? '',
     subscription_active: subscriptionActive,
     subscription_expires_at: subscriptionExpiresAt,
-    last_active_at: session?.lastMessageAt?.toISOString() ?? user.updatedAt.toISOString(),
-    relevant_memories: relevantMemories || 'Nenhuma memória registrada.',
-    conversation_history: conversationHistory || 'Primeira conversa.',
+    last_active_at: session?.lastMessageAt?.toISOString() ?? user.createdAt.toISOString(),
+    relevant_memories: relevantMemories || '',
+    conversation_history: conversationHistory || '',
     // Legacy fields for backwards compat
-    display_name: user.displayName ?? user.name,
+    display_name: user.displayName ?? user.name ?? 'amiga',
     current_track: currentTrack,
     current_lesson: currentLesson,
+    current_lesson_position: '',
+    total_lessons: '',
+    handoff_context: '',
+    // Evaluator fields
+    lesson_objective: '',
+    lesson_success_criteria: '',
+    user_submission: '',
+    recent_outcomes: '',
+    // Intent classifier fields
+    user_message: '',
   };
 }

@@ -4,56 +4,22 @@
 // Handles eligibility, offer delivery, and
 // response classification for Pro plan upsell.
 
-import { db, eq, and, lt, gt, isNull, users, subscriptions } from '@pronto-ia/database';
+import { db, eq, users } from '@pronto-ia/database';
 import { outboundQueue } from '../queues';
 import type { OutboundJobData } from '../queues';
 import { TEMPLATE } from './templates';
+import { checkProEligibility } from './pro-eligibility';
 
 // ---- Eligibility ----
+// Delegates to canonical checker in pro-eligibility.ts (Anexo C)
+// Kept for backwards compat — new code should use checkProEligibility directly.
 
-const PRO_OFFER_COOLDOWN_DAYS = 30;
-const PRO_OFFER_BLOCK_HOURS = 4;
-
-interface EligibilityResult {
-  eligible: boolean;
-  reason?: string;
-}
-
-export async function isEligibleForProOffer(user: typeof users.$inferSelect): Promise<EligibilityResult> {
-  // Already Pro
-  if (user.isPro) {
-    return { eligible: false, reason: 'already_pro' };
-  }
-
-  // Onboarding not completed
-  if (!user.onboardingCompletedAt) {
-    return { eligible: false, reason: 'onboarding_incomplete' };
-  }
-
-  // Blocked due to negative event
-  if (user.proOfferBlockedUntil && new Date(user.proOfferBlockedUntil) > new Date()) {
-    return { eligible: false, reason: 'blocked' };
-  }
-
-  // Offered recently (30-day cooldown)
-  if (user.proOfferedAt) {
-    const daysSinceOffer = (Date.now() - user.proOfferedAt.getTime()) / (1000 * 60 * 60 * 24);
-    if (daysSinceOffer < PRO_OFFER_COOLDOWN_DAYS) {
-      return { eligible: false, reason: 'cooldown' };
-    }
-  }
-
-  // Pending action already set
-  if (user.pendingAction && user.pendingAction !== 'awaiting_pro_response') {
-    return { eligible: false, reason: 'pending_action' };
-  }
-
-  // Deleted account
-  if (user.deletedAt) {
-    return { eligible: false, reason: 'deleted' };
-  }
-
-  return { eligible: true };
+export async function isEligibleForProOffer(userId: string): Promise<{ eligible: boolean; reason?: string }> {
+  const result = await checkProEligibility(userId);
+  return {
+    eligible: result.eligible,
+    reason: result.reasons[0] ?? undefined,
+  };
 }
 
 // ---- Offer Pro ----
@@ -65,7 +31,7 @@ export async function offerPro(
   const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
   if (!user) return;
 
-  const eligibility = await isEligibleForProOffer(user);
+  const eligibility = await isEligibleForProOffer(userId);
   if (!eligibility.eligible) return;
 
   const displayName = user.displayName ?? user.name;
@@ -204,7 +170,7 @@ export async function handleProResponse(
 
 // ---- Block Pro Offer ----
 
-export async function blockProOffer(userId: string, hours: number = PRO_OFFER_BLOCK_HOURS): Promise<void> {
+export async function blockProOffer(userId: string, hours: number = 4): Promise<void> {
   const blockedUntil = new Date(Date.now() + hours * 60 * 60 * 1000);
 
   await db
