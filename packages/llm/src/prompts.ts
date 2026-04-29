@@ -3,19 +3,28 @@
 // ============================================
 // Reads versioned persona prompts from the prompts/ directory.
 // Prompts are markdown files with YAML frontmatter.
+// Structure: basePrompt (cacheable) + dynamicContext (not cacheable)
+// separated by ---DYNAMIC--- marker.
 
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
-export interface LoadedPrompt {
+// ---- Types ----
+
+export interface PromptMeta {
   version: string;
   persona: string;
   name: string;
   role: string;
   vertical: string;
   model: string;
+  escalationModel: string;
   language: string;
   fallbackMessage: string;
+}
+
+export interface LoadedPrompt {
+  meta: PromptMeta;
   /** Cacheable part of the system prompt (sent with cache_control: ephemeral) */
   basePrompt: string;
   /** Dynamic per-user context (NOT cached — changes per conversation) */
@@ -23,6 +32,21 @@ export interface LoadedPrompt {
   /** Full system prompt (basePrompt + dynamicContext) — kept for backwards compat */
   systemPrompt: string;
 }
+
+export interface UserContext {
+  display_name?: string;
+  lifecycle_state?: string;
+  pending_action?: string;
+  vertical?: string;
+  current_track?: string;
+  current_lesson?: string;
+  last_active_at?: string;
+  relevant_memories?: string;
+  conversation_history?: string;
+  [key: string]: string | undefined;
+}
+
+// ---- Loader ----
 
 function getPromptsDir(): string {
   return process.env.PROMPTS_DIR ?? join(process.cwd(), 'prompts', 'personas');
@@ -47,7 +71,19 @@ function parseFrontmatter(raw: string): { meta: Record<string, string>; body: st
   return { meta, body: match[2].trim() };
 }
 
-export function loadPrompt(persona: string, userContext?: Record<string, string>): LoadedPrompt {
+function fillTemplate(template: string, ctx: UserContext): string {
+  let result = template;
+  for (const [key, value] of Object.entries(ctx)) {
+    if (value !== undefined) {
+      result = result.replaceAll(`{{${key}}}`, value);
+    }
+  }
+  // Remove unfilled placeholders (optional — keeps template clean)
+  result = result.replace(/\{\{[a-z_]+\}\}/g, '');
+  return result;
+}
+
+export function loadPrompt(persona: string, userContext?: UserContext): LoadedPrompt {
   const cached = cache.get(persona);
   if (cached && !userContext) return cached;
 
@@ -78,20 +114,21 @@ export function loadPrompt(persona: string, userContext?: Record<string, string>
 
   // Fill template placeholders in dynamicContext with userContext
   if (userContext && dynamicContext) {
-    for (const [key, value] of Object.entries(userContext)) {
-      dynamicContext = dynamicContext.replaceAll(`{{${key}}}`, value);
-    }
+    dynamicContext = fillTemplate(dynamicContext, userContext);
   }
 
   const prompt: LoadedPrompt = {
-    version: meta.version ?? '0.0.0',
-    persona: meta.persona ?? persona,
-    name: meta.name ?? persona,
-    role: meta.role ?? 'unknown',
-    vertical: meta.vertical ?? 'all',
-    model: meta.model ?? 'claude-haiku-4-5-20251001',
-    language: meta.language ?? 'pt-BR',
-    fallbackMessage: meta.fallback_message ?? 'Pode repetir, por favor? Deu um pequeno problema técnico aqui.',
+    meta: {
+      version: meta.version ?? '0.0.0',
+      persona: meta.persona ?? persona,
+      name: meta.name ?? persona,
+      role: meta.role ?? 'unknown',
+      vertical: meta.vertical ?? 'all',
+      model: meta.default_model ?? meta.model ?? 'claude-haiku-4-5-20251001',
+      escalationModel: meta.escalation_model ?? 'claude-sonnet-4-5-20250514',
+      language: meta.language ?? 'pt-BR',
+      fallbackMessage: meta.fallback_message ?? 'Pode repetir, por favor? Deu um pequeno problema técnico aqui.',
+    },
     basePrompt,
     dynamicContext,
     systemPrompt: dynamicContext ? `${basePrompt}\n\n${dynamicContext}` : basePrompt,

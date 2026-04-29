@@ -17,17 +17,17 @@ afterAll(() => {
 describe('loadPrompt — Maria', () => {
   it('loads Maria prompt with correct metadata', () => {
     const prompt = loadPrompt('maria');
-    expect(prompt.persona).toBe('maria');
-    expect(prompt.name).toBe('Maria');
-    expect(prompt.role).toBe('host');
-    expect(prompt.vertical).toBe('all');
-    expect(prompt.model).toBe('claude-haiku-4-5-20251001');
-    expect(prompt.language).toBe('pt-BR');
+    expect(prompt.meta.persona).toBe('maria');
+    expect(prompt.meta.name).toBe('Maria');
+    expect(prompt.meta.role).toBe('host');
+    expect(prompt.meta.vertical).toBe('all');
+    expect(prompt.meta.model).toBe('claude-haiku-4-5-20251001');
+    expect(prompt.meta.language).toBe('pt-BR');
   });
 
   it('loads Maria prompt with fallbackMessage', () => {
     const prompt = loadPrompt('maria');
-    expect(prompt.fallbackMessage).toBe(
+    expect(prompt.meta.fallbackMessage).toBe(
       'Me perdi um pouco aqui, meu bem. Pode repetir o que você disse? Quero ter certeza que entendi direitinho.',
     );
   });
@@ -42,32 +42,32 @@ describe('loadPrompt — Maria', () => {
 describe('loadPrompt — other personas', () => {
   it('loads Bia prompt with fallbackMessage', () => {
     const prompt = loadPrompt('bia');
-    expect(prompt.persona).toBe('bia');
-    expect(prompt.fallbackMessage).toBe(
+    expect(prompt.meta.persona).toBe('bia');
+    expect(prompt.meta.fallbackMessage).toBe(
       'Aqui deu uma travada rápida, meu bem. Me fala de novo, por favor?',
     );
   });
 
   it('loads Leo prompt with fallbackMessage', () => {
     const prompt = loadPrompt('leo');
-    expect(prompt.persona).toBe('leo');
-    expect(prompt.fallbackMessage).toBe(
+    expect(prompt.meta.persona).toBe('leo');
+    expect(prompt.meta.fallbackMessage).toBe(
       'Deu um curto aqui, chef. Me manda de novo, rapidinho?',
     );
   });
 
   it('loads Tião prompt with fallbackMessage', () => {
     const prompt = loadPrompt('tiao');
-    expect(prompt.persona).toBe('tiao');
-    expect(prompt.fallbackMessage).toBe(
+    expect(prompt.meta.persona).toBe('tiao');
+    expect(prompt.meta.fallbackMessage).toBe(
       'Deu um problema técnico rápido aqui, mano. Repete pra mim, bora?',
     );
   });
 
   it('loads Evaluator prompt with fallbackMessage', () => {
     const prompt = loadPrompt('evaluator');
-    expect(prompt.persona).toBe('evaluator');
-    expect(prompt.fallbackMessage).toBe(
+    expect(prompt.meta.persona).toBe('evaluator');
+    expect(prompt.meta.fallbackMessage).toBe(
       'Não consegui avaliar sua resposta agora. Vou tentar novamente em breve.',
     );
   });

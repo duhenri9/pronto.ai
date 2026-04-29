@@ -20,3 +20,4 @@ export {
   handleLgpdConfirmation,
   lgpdAnonymizeWorker,
 } from './cancellation';
+export { buildDynamicContext } from './context';

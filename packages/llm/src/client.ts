@@ -193,7 +193,7 @@ export class ProntoLLMClient {
     overrides?: Partial<LLMConfig>,
   ): LLMConfig {
     return {
-      model: (overrides?.model ?? prompt.model ?? this.defaultConfig.model) as AnthropicModel,
+      model: (overrides?.model ?? prompt.meta.model ?? this.defaultConfig.model) as AnthropicModel,
       maxTokens: overrides?.maxTokens ?? this.defaultConfig.maxTokens,
       temperature: overrides?.temperature ?? this.defaultConfig.temperature,
     };

@@ -129,7 +129,7 @@ export const inboundWorker = new Worker<InboundJobData>(
     } catch (err) {
       console.error(`[INBOUND] LLM call failed for ${phone}:`, err);
       // Enqueue fallback outbound message using persona's fallback_message
-      const fallbackMsg = loadPrompt(persona).fallbackMessage;
+      const fallbackMsg = loadPrompt(persona).meta.fallbackMessage;
       await outboundQueue.add('fallback', {
         userId,
         phone,

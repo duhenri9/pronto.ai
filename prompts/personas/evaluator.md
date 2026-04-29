@@ -1,10 +1,11 @@
 ---
-version: 1.1.0
+version: 1.2.0
 persona: evaluator
 name: Evaluator
 role: exercise_grader
 vertical: all
-model: claude-sonnet-4-5-20250514
+default_model: claude-sonnet-4-5-20250514
+escalation_model: claude-sonnet-4-5-20250514
 language: pt-BR
 fallback_message: Não consegui avaliar sua resposta agora. Vou tentar novamente em breve.
 ---
