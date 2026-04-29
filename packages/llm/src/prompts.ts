@@ -21,6 +21,7 @@ export interface PromptMeta {
   escalationModel: string;
   language: string;
   fallbackMessage: string;
+  requiredSubscription?: string;
 }
 
 export interface LoadedPrompt {
@@ -34,15 +35,21 @@ export interface LoadedPrompt {
 }
 
 export interface UserContext {
-  display_name?: string;
+  preferred_name?: string;
   lifecycle_state?: string;
   pending_action?: string;
   vertical?: string;
-  current_track?: string;
-  current_lesson?: string;
+  business_context?: string;
+  preferred_contact_window?: string;
+  subscription_active?: string;
+  subscription_expires_at?: string;
   last_active_at?: string;
   relevant_memories?: string;
   conversation_history?: string;
+  // Legacy fields kept for backwards compat with other persona prompts
+  display_name?: string;
+  current_track?: string;
+  current_lesson?: string;
   [key: string]: string | undefined;
 }
 
@@ -73,6 +80,25 @@ function parseFrontmatter(raw: string): { meta: Record<string, string>; body: st
 
 function fillTemplate(template: string, ctx: UserContext): string {
   let result = template;
+
+  // Process {{#if key}}...{{/if}} conditional blocks
+  result = result.replace(/\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_match, key: string, content: string) => {
+    const value = ctx[key];
+    // Truthy = non-empty string that's not "false" or "0"
+    if (value && value !== 'false' && value !== '0') {
+      // Also fill any placeholders within the conditional content
+      let filled = content;
+      for (const [k, v] of Object.entries(ctx)) {
+        if (v !== undefined) {
+          filled = filled.replaceAll(`{{${k}}}`, v);
+        }
+      }
+      return filled;
+    }
+    return ''; // Remove entire block if condition is falsy
+  });
+
+  // Fill simple {{key}} placeholders
   for (const [key, value] of Object.entries(ctx)) {
     if (value !== undefined) {
       result = result.replaceAll(`{{${key}}}`, value);
@@ -128,6 +154,7 @@ export function loadPrompt(persona: string, userContext?: UserContext): LoadedPr
       escalationModel: meta.escalation_model ?? 'claude-sonnet-4-5-20250514',
       language: meta.language ?? 'pt-BR',
       fallbackMessage: meta.fallback_message ?? 'Pode repetir, por favor? Deu um pequeno problema técnico aqui.',
+      requiredSubscription: meta.required_subscription ?? undefined,
     },
     basePrompt,
     dynamicContext,

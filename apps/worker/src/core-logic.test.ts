@@ -564,7 +564,7 @@ describe('Core Loop — full flow (webhook → inbound → outbound)', () => {
 
 describe('processInboundMessage — fallback uses persona-specific message', () => {
   it('uses Bia fallback when persona is bia', async () => {
-    const biaFallback = 'Aqui deu uma travada rápida, meu bem. Me fala de novo, por favor?';
+    const biaFallback = 'Deu um branco aqui. Me manda de novo?';
     const enqueueOutbound = vi.fn().mockResolvedValue(undefined);
 
     const result = await processInboundMessage(makeInboundJobData(), {

@@ -4,7 +4,7 @@
 // Builds the UserContext object from database records
 // to fill the ---DYNAMIC--- section of persona prompts.
 
-import { db, eq, desc, users, whatsappSessions, whatsappMessages, userMemory, enrollments, lessons } from '@pronto-ia/database';
+import { db, eq, desc, users, whatsappSessions, whatsappMessages, userMemory, enrollments, lessons, subscriptions } from '@pronto-ia/database';
 import type { UserContext } from '@pronto-ia/llm';
 
 interface BuildContextOptions {
@@ -16,16 +16,20 @@ interface BuildContextOptions {
 export async function buildDynamicContext(options: BuildContextOptions): Promise<UserContext> {
   const { userId, sessionId, lessonId } = options;
 
-  // Fetch user + session in parallel
-  const [userRows, sessionRows] = await Promise.all([
+  // Fetch user + session + active subscription in parallel
+  const [userRows, sessionRows, subRows] = await Promise.all([
     db.select().from(users).where(eq(users.id, userId)).limit(1),
     sessionId
       ? db.select().from(whatsappSessions).where(eq(whatsappSessions.id, sessionId)).limit(1)
       : Promise.resolve([]),
+    db.select().from(subscriptions)
+      .where(eq(subscriptions.userId, userId))
+      .limit(1),
   ]);
 
   const user = userRows[0];
   const session = sessionRows[0];
+  const activeSub = subRows.find(s => s.status === 'active');
 
   if (!user) return {};
 
@@ -73,15 +77,32 @@ export async function buildDynamicContext(options: BuildContextOptions): Promise
     .map((m: { direction: unknown; textContent: string | null }) => `${m.direction === 'inbound' ? 'Usuário' : 'Maria'}: ${m.textContent!}`)
     .join('\n');
 
+  // Subscription info for conditional block
+  const subscriptionActive = activeSub ? 'true' : '';
+  const subscriptionExpiresAt = activeSub?.currentPeriodEnd?.toISOString() ?? '';
+
+  // Format business context
+  const businessContext = user.businessContext
+    ? typeof user.businessContext === 'string'
+      ? user.businessContext
+      : JSON.stringify(user.businessContext)
+    : '';
+
   return {
-    display_name: user.displayName ?? user.name,
+    preferred_name: user.displayName ?? user.name,
     lifecycle_state: user.lifecycleState,
     pending_action: user.pendingAction ?? '',
     vertical: user.vertical ?? '',
-    current_track: currentTrack,
-    current_lesson: currentLesson,
+    business_context: businessContext,
+    preferred_contact_window: user.preferredContactWindow ?? '',
+    subscription_active: subscriptionActive,
+    subscription_expires_at: subscriptionExpiresAt,
     last_active_at: session?.lastMessageAt?.toISOString() ?? user.updatedAt.toISOString(),
     relevant_memories: relevantMemories || 'Nenhuma memória registrada.',
     conversation_history: conversationHistory || 'Primeira conversa.',
+    // Legacy fields for backwards compat
+    display_name: user.displayName ?? user.name,
+    current_track: currentTrack,
+    current_lesson: currentLesson,
   };
 }
