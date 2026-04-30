@@ -311,19 +311,38 @@ export async function handleReactivationRequest(
 
   const displayName = user.displayName ?? user.name ?? 'amiga';
 
-  // Send reactivation acknowledgement
+  // Check if user had founder benefit locked (persists across cancel/reactivate)
+  const [prevSub] = await db
+    .select({
+      founderBenefitLocked: subscriptions.founderBenefitLocked,
+      planTier: subscriptions.planTier,
+    })
+    .from(subscriptions)
+    .where(eq(subscriptions.userId, userId))
+    .limit(1);
+
+  const isFounder = prevSub?.founderBenefitLocked === true;
+
+  // Send reactivation acknowledgement (founder gets preserved message)
+  const reactivationMessage = isFounder
+    ? TEMPLATE.REA_01_FOUNDER_PRESERVED(displayName)
+    : TEMPLATE.REA_01(displayName);
+
   await outboundQueue.add('reactivation_acknowledge', {
     userId,
     phone: user.phone,
-    messageText: TEMPLATE.REA_01(displayName),
+    messageText: reactivationMessage,
     messageType: 'text',
     persona: 'maria',
     sessionId: '',
   } as OutboundJobData, { attempts: 2, backoff: { type: 'exponential', delay: 2000 } });
 
-  // Initiate checkout (same flow as initial, type='reactivation')
+  // Initiate checkout — pass forced_tier if founder so webhook preserves tier
   const { initiateCheckout } = await import('./payment');
-  await initiateCheckout(userId, 'initial');
+  const metadataOverrides = isFounder
+    ? { forced_tier: 'founder' }
+    : undefined;
+  await initiateCheckout(userId, 'initial', metadataOverrides);
 
   return true;
 }

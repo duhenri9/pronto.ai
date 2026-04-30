@@ -97,6 +97,8 @@ export async function buildDynamicContext(options: BuildContextOptions): Promise
     preferred_contact_window: user.preferredContactWindow ?? '',
     subscription_active: subscriptionActive,
     subscription_expires_at: subscriptionExpiresAt,
+    plan_tier: activeSub?.planTier ?? '',
+    founder_benefit_locked: activeSub?.founderBenefitLocked ? 'true' : '',
     last_active_at: session?.lastMessageAt?.toISOString() ?? user.createdAt.toISOString(),
     relevant_memories: relevantMemories || '',
     conversation_history: conversationHistory || '',

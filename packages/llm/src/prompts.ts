@@ -44,6 +44,8 @@ export interface UserContext {
   preferred_contact_window?: string;
   subscription_active?: string;
   subscription_expires_at?: string;
+  plan_tier?: string;
+  founder_benefit_locked?: string;
   last_active_at?: string;
   relevant_memories?: string;
   conversation_history?: string;

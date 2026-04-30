@@ -1,10 +1,11 @@
 // ============================================
-// PRONTO.IA — AbacatePay Payment Flow (1.4)
+// PRONTO.IA — AbacatePay Payment Flow (1.5)
 // ============================================
 // Handles checkout creation, webhook processing,
-// email capture, and receipt sending.
+// email capture, receipt sending, and tier decision
+// (founder vs pro_single with atomic counter).
 
-import { db, eq, users, payments, subscriptions, processedEvents } from '@pronto-ia/database';
+import { db, eq, and, isNull, users, payments, subscriptions, processedEvents, launchPhaseConfig } from '@pronto-ia/database';
 import { outboundQueue } from '../queues';
 import type { OutboundJobData } from '../queues';
 import { TEMPLATE } from './templates';
@@ -14,6 +15,70 @@ import { TEMPLATE } from './templates';
 const PRO_MONTHLY_PRICE_CENTS = 2900; // R$ 29,00
 const PIX_EXPIRATION_MINUTES = 60;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://prontoia.com.br';
+
+// ---- Tier Decision (Sprint 3) ----
+
+type TierDecision = {
+  tier: 'founder' | 'pro_single';
+  founderBenefitLocked: boolean;
+  selectedSpecialist: string | null;  // NULL for founder, 'bia' default for pro_single
+};
+
+/**
+ * Determines subscription tier at payment confirmation.
+ * - If forced_tier in metadata (reactivation) → use it directly.
+ * - Otherwise: atomic decision with FOR UPDATE on launch_phase_config.
+ *   founder if under cap + phase active; pro_single otherwise.
+ */
+async function determineTier(
+  userId: string,
+  checkoutMetadata?: Record<string, string> | null,
+): Promise<TierDecision> {
+  // 1. Forced tier from reactivation or admin override
+  if (checkoutMetadata?.forced_tier === 'founder') {
+    return { tier: 'founder', founderBenefitLocked: true, selectedSpecialist: null };
+  }
+  if (checkoutMetadata?.forced_tier === 'pro_single') {
+    return {
+      tier: 'pro_single',
+      founderBenefitLocked: false,
+      selectedSpecialist: checkoutMetadata.selected_specialist ?? 'bia',
+    };
+  }
+
+  // 2. Atomic tier decision with FOR UPDATE lock
+  const result = await db.transaction(async (tx) => {
+    const [config] = await tx
+      .select()
+      .from(launchPhaseConfig)
+      .where(isNull(launchPhaseConfig.endedAt))
+      .for('update');
+
+    if (!config) {
+      // No active launch phase → pro_single
+      return { tier: 'pro_single' as const };
+    }
+
+    if (config.founderCount < config.founderCap) {
+      // Still room for founders → increment counter atomically
+      await tx
+        .update(launchPhaseConfig)
+        .set({ founderCount: config.founderCount + 1 })
+        .where(eq(launchPhaseConfig.id, 1));
+
+      return { tier: 'founder' as const };
+    }
+
+    // Cap reached → pro_single
+    return { tier: 'pro_single' as const };
+  });
+
+  return {
+    tier: result.tier,
+    founderBenefitLocked: result.tier === 'founder',
+    selectedSpecialist: result.tier === 'pro_single' ? 'bia' : null,
+  };
+}
 
 // ---- AbacatePay Client ----
 
@@ -28,6 +93,7 @@ async function createAbacateCheckout(params: {
   userId: string;
   displayName: string | null;
   phone: string;
+  metadataOverrides?: Record<string, string>;
 }): Promise<AbacateCheckout> {
   const apiKey = process.env.ABACATE_PAY_API_KEY;
   if (!apiKey) throw new Error('ABACATE_PAY_API_KEY not configured');
@@ -50,6 +116,7 @@ async function createAbacateCheckout(params: {
         user_id: params.userId,
         product: 'prontoia_pro_monthly',
         version: 'v1.0',
+        ...params.metadataOverrides,
       },
       callback_url: `${BASE_URL}/api/v1/webhooks/abacate`,
       expiration_minutes: PIX_EXPIRATION_MINUTES,
@@ -72,7 +139,7 @@ async function createAbacateCheckout(params: {
 
 // ---- Initiate Checkout ----
 
-export async function initiateCheckout(userId: string, type: 'initial' | 'renewal' = 'initial'): Promise<void> {
+export async function initiateCheckout(userId: string, type: 'initial' | 'renewal' = 'initial', metadataOverrides?: Record<string, string>): Promise<void> {
   const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
   if (!user) return;
 
@@ -81,9 +148,10 @@ export async function initiateCheckout(userId: string, type: 'initial' | 'renewa
       userId: user.id,
       displayName: user.displayName ?? user.name,
       phone: user.phone,
+      metadataOverrides,
     });
 
-    // Create payment record
+    // Create payment record (metadata stored for tier decision on webhook)
     await db.insert(payments).values({
       userId: user.id,
       amountCents: PRO_MONTHLY_PRICE_CENTS,
@@ -95,6 +163,7 @@ export async function initiateCheckout(userId: string, type: 'initial' | 'renewa
       isSubscription: true,
       planType: 'pro_monthly',
       expiresAt: new Date(Date.now() + PIX_EXPIRATION_MINUTES * 60 * 1000),
+      metadata: metadataOverrides ?? null,
     });
 
     // Send payment link
@@ -199,6 +268,12 @@ export async function handleAbacateWebhook(
   // 4. Process event
   switch (event.type) {
     case 'checkout.paid': {
+      // Determine tier (founder vs pro_single) based on launch phase
+      const tierDecision = await determineTier(
+        userId,
+        payment.metadata as Record<string, string> | null | undefined,
+      );
+
       // Transactional update
       await db.update(payments).set({
         status: 'PAID',
@@ -212,6 +287,9 @@ export async function handleAbacateWebhook(
         currentPeriodStart: new Date(),
         currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         abacateSubscriptionId: event.subscription_id ?? null,
+        planTier: tierDecision.tier,
+        founderBenefitLocked: tierDecision.founderBenefitLocked,
+        selectedSpecialist: tierDecision.selectedSpecialist,
       });
 
       await db.update(users).set({
@@ -222,11 +300,16 @@ export async function handleAbacateWebhook(
         updatedAt: new Date(),
       }).where(eq(users.id, userId));
 
+      // Select template based on tier
+      const confirmationMessage = tierDecision.tier === 'founder'
+        ? TEMPLATE.PAY_02_FOUNDER
+        : TEMPLATE.PAY_02_PRO_SINGLE;
+
       // Confirm payment
       await outboundQueue.add('payment_confirmed', {
         userId,
         phone: user.phone,
-        messageText: TEMPLATE.PAY_02,
+        messageText: confirmationMessage,
         messageType: 'text',
         persona: 'maria',
         sessionId: '',
@@ -413,6 +496,12 @@ export async function handlePaymentInquiry(userId: string): Promise<void> {
 
   switch (status) {
     case 'confirmed': {
+      // Determine tier (founder vs pro_single) for manual confirmation
+      const tierDecision = await determineTier(
+        userId,
+        pending.metadata as Record<string, string> | null | undefined,
+      );
+
       // Payment confirmed via API — process it manually
       await db.update(payments).set({
         status: 'PAID',
@@ -425,6 +514,9 @@ export async function handlePaymentInquiry(userId: string): Promise<void> {
         status: 'active',
         currentPeriodStart: new Date(),
         currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        planTier: tierDecision.tier,
+        founderBenefitLocked: tierDecision.founderBenefitLocked,
+        selectedSpecialist: tierDecision.selectedSpecialist,
       });
 
       await db.update(users).set({
@@ -435,10 +527,15 @@ export async function handlePaymentInquiry(userId: string): Promise<void> {
         updatedAt: new Date(),
       }).where(eq(users.id, userId));
 
+      // Select template based on tier
+      const confirmationMessage = tierDecision.tier === 'founder'
+        ? TEMPLATE.PAY_02_FOUNDER
+        : TEMPLATE.PAY_02_PRO_SINGLE;
+
       await outboundQueue.add('payment_confirmed_late', {
         userId,
         phone: user.phone,
-        messageText: TEMPLATE.PAY_02,
+        messageText: confirmationMessage,
         messageType: 'text',
         persona: 'maria',
         sessionId: '',

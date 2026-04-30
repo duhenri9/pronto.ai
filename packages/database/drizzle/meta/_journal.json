@@ -15,6 +15,13 @@
       "when": 1777485773572,
       "tag": "0001_zippy_polaris",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777564328573,
+      "tag": "0002_gigantic_galactus",
+      "breakpoints": true
     }
   ]
 }

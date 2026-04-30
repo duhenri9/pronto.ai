@@ -7,3 +7,4 @@ export { loadPrompt, clearPromptCache, listAvailablePersonas, type LoadedPrompt,
 export { validateInput, validateOutput, sanitizeUserMessage, type GuardrailResult } from './guardrails';
 export { classifyIntent, tryRegexClassify, type Intent, type IntentResult } from './router';
 export { getModelForIntent, shouldEscalate } from './model-mapper';
+export { canAccessSpecialist, type Specialist } from './access';

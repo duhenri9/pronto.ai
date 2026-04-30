@@ -7,6 +7,7 @@ import {
   pgTable,
   uuid,
   text,
+  boolean,
   timestamp,
   index,
 } from 'drizzle-orm/pg-core';
@@ -31,6 +32,13 @@ export const subscriptions = pgTable(
     // AbacatePay integration
     abacateSubscriptionId: text('abacate_subscription_id'),
 
+    // Founder Benefit — Sprint 3
+    // planTier is NULL by default; webhook decides explicitly.
+    // 'founder' = access to all specialists; 'pro_single' = 1 chosen specialist
+    planTier: text('plan_tier'),
+    founderBenefitLocked: boolean('founder_benefit_locked').default(false),
+    selectedSpecialist: text('selected_specialist'),  // only when planTier='pro_single'
+
     // Cancellation
     canceledAt: timestamp('canceled_at', { withTimezone: true }),
     cancellationReason: text('cancellation_reason'),
@@ -44,6 +52,7 @@ export const subscriptions = pgTable(
     index('idx_subscriptions_user').on(table.userId),
     index('idx_subscriptions_status').on(table.status),
     index('idx_subscriptions_abacate_id').on(table.abacateSubscriptionId),
+    index('idx_subscriptions_plan_tier').on(table.planTier),
   ],
 );
 

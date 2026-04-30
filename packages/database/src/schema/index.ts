@@ -46,3 +46,4 @@ export { subscriptions, subscriptionsRelations } from './subscriptions';
 export { partners } from './partners';
 export { dailyMetrics, processedEvents } from './analytics';
 export { auditLogs, auditLogsRelations } from './audit';
+export { launchPhaseConfig } from './launch-phase';

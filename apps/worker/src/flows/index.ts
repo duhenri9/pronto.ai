@@ -24,3 +24,4 @@ export {
 } from './cancellation';
 export { buildDynamicContext } from './context';
 export { FREE_LESSONS, getNextFreeLesson, formatLessonForDelivery } from './free-lessons';
+export { ZE_LESSONS, getNextZeLesson, formatZeLessonForDelivery } from './ze-lessons';

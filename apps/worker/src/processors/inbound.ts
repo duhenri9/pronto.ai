@@ -18,7 +18,7 @@ import {
   enrollments,
   processedEvents,
 } from '@pronto-ia/database';
-import { ProntoLLMClient, getLLMClient, loadPrompt, classifyIntent, getModelForIntent } from '@pronto-ia/llm';
+import { ProntoLLMClient, getLLMClient, loadPrompt, classifyIntent, getModelForIntent, canAccessSpecialist } from '@pronto-ia/llm';
 import type { ChatMessage, LLMCallResult, Intent } from '@pronto-ia/llm';
 import { eventBus } from '@pronto-ia/events';
 
@@ -127,6 +127,25 @@ export const inboundWorker = new Worker<InboundJobData>(
       return;
     }
 
+    // ---- Step 4.6: Specialist routing (Zé da TI) ----
+    // If intent is fundação digital and user has Pro access, switch to Zé da TI persona
+
+    let activePersona = persona;
+
+    if (intent === 'question_fundacao_digital' && persona !== 'ze-da-ti') {
+      const hasAccess = await canAccessSpecialist(userId, 'ze-da-ti');
+      if (hasAccess) {
+        activePersona = 'ze-da-ti';
+        // Update session so subsequent messages also go to Zé until handback
+        await db
+          .update(whatsappSessions)
+          .set({ currentPersona: 'ze-da-ti', updatedAt: new Date() })
+          .where(eq(whatsappSessions.id, sessionId));
+        console.log(`[INBOUND] Routing to Zé da TI for user ${userId}`);
+      }
+      // If no access, Maria handles it — she may mention Zé in a Pro offer
+    }
+
     // ---- Step 4b: Build conversation history ----
 
     const recentMessages = await db
@@ -154,12 +173,12 @@ export const inboundWorker = new Worker<InboundJobData>(
     let llmResult: LLMCallResult;
 
     // Resolve model based on intent classification (Anexo B)
-    const prompt = loadPrompt(persona);
+    const prompt = loadPrompt(activePersona);
     const escalationModel = getModelForIntent(intent, prompt.meta.model);
 
     try {
       llmResult = await llm.chat({
-        persona,
+        persona: activePersona,
         messages: chatHistory,
         userId,
         sessionId,
@@ -171,13 +190,13 @@ export const inboundWorker = new Worker<InboundJobData>(
     } catch (err) {
       console.error(`[INBOUND] LLM call failed for ${phone}:`, err);
       // Enqueue fallback outbound message using persona's fallback_message
-      const fallbackMsg = loadPrompt(persona).meta.fallbackMessage;
+      const fallbackMsg = loadPrompt(activePersona).meta.fallbackMessage;
       await outboundQueue.add('fallback', {
         userId,
         phone,
         messageText: fallbackMsg,
         messageType: 'text',
-        persona,
+        persona: activePersona,
         sessionId,
       } as OutboundJobData, { attempts: 2, backoff: { type: 'exponential', delay: 5000 } });
       return;
@@ -247,7 +266,7 @@ export const inboundWorker = new Worker<InboundJobData>(
       phone,
       messageText: llmResult.text,
       messageType: 'text',
-      persona,
+      persona: activePersona,
       sessionId,
       lessonId,
       llmCallId,

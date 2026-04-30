@@ -14,6 +14,7 @@ export type Intent =
   | 'greeting'
   | 'question_general'
   | 'question_vertical'
+  | 'question_fundacao_digital'
   | 'command_admin'
   | 'command_lgpd_delete'
   | 'outcome_report'
@@ -114,6 +115,36 @@ const PATTERNS: PatternRule[] = [
     pattern: /(salão|cabeleireiro|manicure|estética|restaurante|lanchonete|food|conserto|reparo)/i,
   },
 
+  // Fundação digital questions → Zé da TI specialist
+  {
+    intent: 'question_fundacao_digital',
+    pattern: /(google\s+meu\s+negócio|google\s+meu\s+negocio|gmb|perfil\s+google)/i,
+  },
+  {
+    intent: 'question_fundacao_digital',
+    pattern: /(whatsapp\s+business|whats\s+business|zap\s+business)/i,
+  },
+  {
+    intent: 'question_fundacao_digital',
+    pattern: /(avaliação|avaliacao|review|reviews|estrela|estrelas|nota\s+no\s+google)/i,
+  },
+  {
+    intent: 'question_fundacao_digital',
+    pattern: /(bio\s*\.?\s*site|link\s+na\s+bio|linktree|página\s+de\s+link)/i,
+  },
+  {
+    intent: 'question_fundacao_digital',
+    pattern: /(foto\s+profissional|foto\s+de\s+perfil|imagem\s+do\s+negócio)/i,
+  },
+  {
+    intent: 'question_fundacao_digital',
+    pattern: /(segurança\s+digital|senha\s+segura|golpe|phishing|autenticação\s+dupla|2fa|verificação\s+em\s+dois)/i,
+  },
+  {
+    intent: 'question_fundacao_digital',
+    pattern: /(fundação\s+digital|presença\s+digital|meu\s+negócio\s+online|como\s+aparecer\s+no\s+google)/i,
+  },
+
   // Pro offer accepted
   {
     intent: 'pro_offer_response',
@@ -173,6 +204,7 @@ const CANONICAL_INTENTS = [
   'greeting',
   'question_general',
   'question_vertical',
+  'question_fundacao_digital',
   'command_admin',
   'command_lgpd_delete',
   'outcome_report',

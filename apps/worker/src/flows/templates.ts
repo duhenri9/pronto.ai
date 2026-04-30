@@ -79,6 +79,12 @@ export const TEMPLATE = {
   PRO_02:
     'Você tá pronta pra um nível mais profundo. Tenho aqui o Pronto.IA Pro — R$ 29/mês, te dá acesso à Bia inteira, com trilha completa pro seu negócio. Pode cancelar quando quiser, sem pegadinha. Quer conhecer?',
 
+  PRO_02_FOUNDER:
+    'Você tá pronta pra um nível mais profundo. Tenho aqui o Pronto.IA Pro — R$ 29/mês. Te dá acesso à Bia inteira (e ao Zé da TI também). E olha que importante: nessa fase de lançamento, quem entra ganha esse acesso pra sempre por R$ 29. Quando a gente chegar em mil assinantes, esse benefício acaba. Quer entrar?',
+
+  PRO_02_POST_LAUNCH:
+    'Você tá pronta pra um nível mais profundo. O Pronto.IA Pro é R$ 29/mês e te dá acesso à Bia (ou outro especialista do seu negócio). Pode cancelar quando quiser, sem pegadinha. Quer conhecer?',
+
   PRO_03:
     'Boa! Vou gerar o link de pagamento agora. Você prefere Pix imediato? (é o único método que aceito por enquanto)',
 
@@ -96,6 +102,12 @@ export const TEMPLATE = {
     `Aqui o link do Pix:\n\n${checkoutUrl}\n\nAssim que receber a confirmação, libero a Bia pra você. Demora poucos segundos.`,
 
   PAY_02:
+    'Recebi! Tá tudo certo. Agora você tem acesso à Bia.',
+
+  PAY_02_FOUNDER:
+    'Recebi! Tá tudo certo. E você acabou de garantir o acesso vitalício a todos os especialistas — atuais e futuros — pelos R$ 29/mês. Bem-vindo ao grupo founder.',
+
+  PAY_02_PRO_SINGLE:
     'Recebi! Tá tudo certo. Agora você tem acesso à Bia.',
 
   PAY_03:
@@ -145,6 +157,9 @@ export const TEMPLATE = {
   REA_01: (name: string) =>
     `${name}, que bom ter você de volta! Te mando o link de pagamento agora mesmo. R$ 29/mês, com a Bia e tudo que você já conhece. Sem pegadinha.`,
 
+  REA_01_FOUNDER_PRESERVED: (name: string) =>
+    `${name}, boa! Vou gerar o link agora. E olha, lembrando: você é founder, então continua R$ 29/mês com acesso a todos os especialistas. Promessa cumprida.`,
+
   // ============================================================
   // 3.6 Cancelamento (CAN-*)
   // ============================================================
@@ -189,4 +204,14 @@ export const TEMPLATE = {
 
   OUT_04:
     'Anotado aqui. Você tá no caminho certo.',
+
+  // ============================================================
+  // 3.10 Zé da TI (ZE-*)
+  // ============================================================
+
+  ZE_01:
+    'E olha só, deixa eu te apresentar mais alguém. Esse é o Zé da TI, nosso especialista em fundação digital — Google Meu Negócio, WhatsApp Business, essas coisas que dão base pro resto funcionar. Como você é founder, ele já tá disponível pra você. Quer começar com ele ou com a Bia?',
+
+  ZE_02_HANDOFF:
+    'Isso aí que você tá pedindo é mais especialidade do Zé da TI. Vou chamar ele aqui pra você.',
 };
