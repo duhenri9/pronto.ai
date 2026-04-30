@@ -5,68 +5,56 @@ import { Scissors, UtensilsCrossed, Wrench, Laptop, Bell } from 'lucide-react';
 
 type VerticalStatus = 'available' | 'in_development';
 
-interface VerticalDef {
-  slug: string;
-  name: string;
-  persona: string;
-  icon: typeof Scissors;
-  accent: 'green' | 'gold' | 'night' | 'blue';
-  tagline: string;
-  description: string;
-  pain: string;
-  status: VerticalStatus;
-}
-
-const VERTICALS: VerticalDef[] = [
+const VERTICALS = [
   {
     slug: 'salao',
     name: 'Salão de Beleza & Estética',
     persona: 'Bia',
     icon: Scissors,
-    accent: 'green',
+    accent: 'green' as const,
     tagline: 'Sua agenda cheia, seu Instagram voando',
     description:
       'Agendamento, marketing no Instagram, precificação de serviços, fidelização de clientes com IA.',
     pain: 'Cliente cancela, agenda vazia, post não sai',
-    status: 'available',
-  },
-  {
-    slug: 'tech-service',
-    name: 'TI & Tecnologia',
-    persona: 'Zé',
-    icon: Laptop,
-    accent: 'blue',
-    tagline: 'Cobre o valor certo, conquista o cliente certo',
-    description:
-      'Precificação de hora/projeto, contratos simples, captação no LinkedIn, automação com IA.',
-    pain: 'Freela barato, cliente calote, sem contrato',
-    status: 'available',
+    status: 'available' as VerticalStatus,
   },
   {
     slug: 'food-service',
     name: 'Food Service Local',
     persona: 'Léo',
     icon: UtensilsCrossed,
-    accent: 'gold',
+    accent: 'gold' as const,
     tagline: 'Seu cardápio inteligente, seu delivery sem dono',
     description:
       'Cardápio com IA, delivery sem app, precificação dinâmica, WhatsApp como canal de pedido.',
     pain: 'Custo subiu, cliente some, delivery come margem',
-    status: 'in_development',
+    status: 'in_development' as VerticalStatus,
   },
   {
     slug: 'home-service',
     name: 'Prestadores de Serviço',
     persona: 'Tião',
     icon: Wrench,
-    accent: 'night',
+    accent: 'night' as const,
     tagline: 'Mais serviço, preço justo, cliente que volta',
     description:
       'Orçamento automático, roteamento de visitas, formalização do MEI, captação via Google.',
     pain: 'Falta serviço, orçamento errado, cliente não volta',
-    status: 'in_development',
+    status: 'in_development' as VerticalStatus,
   },
-];
+  {
+    slug: 'tech-service',
+    name: 'TI & Tecnologia',
+    persona: 'Zé',
+    icon: Laptop,
+    accent: 'blue' as const,
+    tagline: 'Cobre o valor certo, conquista o cliente certo',
+    description:
+      'Precificação de hora/projeto, contratos simples, captação no LinkedIn, automação com IA.',
+    pain: 'Freela barato, cliente calote, sem contrato',
+    status: 'available' as VerticalStatus,
+  },
+] as const;
 
 const ACCENT_MAP = {
   green: {
@@ -106,18 +94,15 @@ const ACCENT_MAP = {
 export function VerticalCards() {
   const [hovered, setHovered] = useState<string | null>(null);
 
-  const available = VERTICALS.filter((v) => v.status === 'available');
-  const inDev = VERTICALS.filter((v) => v.status === 'in_development');
-
   return (
-    <div className="space-y-10">
-      {/* Available specialists — full prominence */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        {available.map((v, i) => {
+    <div className="space-y-6">
+      <div className="mt-12 grid gap-6 sm:grid-cols-2">
+        {VERTICALS.map((v, i) => {
           const Icon = v.icon;
           const a = ACCENT_MAP[v.accent];
           const isHovered = hovered === v.slug;
           const isOtherHovered = hovered !== null && hovered !== v.slug;
+          const isAvailable = v.status === 'available';
 
           return (
             <div
@@ -135,19 +120,27 @@ export function VerticalCards() {
                 animation: `cardIn 500ms ${i * 80}ms both cubic-bezier(0.22, 1, 0.36, 1)`,
               }}
             >
-              {/* Top row: icon + status badge */}
+              {/* Top row: icon + persona tag + status */}
               <div className="flex items-center justify-between">
                 <div className={`text-heading-l ${a.icon}`}>
                   <Icon size={24} strokeWidth={1.5} />
                 </div>
-                <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-micro font-medium ${a.tag}`}
-                >
-                  <span
-                    className={`inline-block h-1.5 w-1.5 rounded-full ${a.dot}`}
-                  />
-                  {v.persona}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-micro font-medium ${a.tag}`}>
+                    <span className={`inline-block h-1.5 w-1.5 rounded-full ${a.dot}`} />
+                    {v.persona}
+                  </span>
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-micro font-medium ${
+                    isAvailable
+                      ? 'bg-green-50 text-green-600'
+                      : 'bg-neutral-100 text-neutral-500'
+                  }`}>
+                    <span className={`inline-block h-1.5 w-1.5 rounded-full ${
+                      isAvailable ? 'bg-green-400' : 'bg-neutral-300'
+                    }`} />
+                    {isAvailable ? 'Disponível' : 'Em desenvolvimento'}
+                  </span>
+                </div>
               </div>
 
               {/* Title + tagline */}
@@ -163,73 +156,26 @@ export function VerticalCards() {
                 {v.description}
               </p>
 
-              {/* Pain callout */}
+              {/* Pain callout or CTA */}
               <div className="mt-auto pt-4">
-                <div className={`rounded-md px-3 py-2.5 ${a.painBg}`}>
-                  <p className="font-mono text-micro uppercase tracking-micro text-text-tertiary">
-                    dor que resolve
-                  </p>
-                  <p className="mt-0.5 text-body-s font-medium text-neutral-800">
-                    {v.pain}
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* In-development specialists — secondary visual tier */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        {inDev.map((v, i) => {
-          const Icon = v.icon;
-
-          return (
-            <div
-              key={v.slug}
-              className={`
-                group relative flex flex-col rounded-lg border border-dashed
-                border-neutral-200 bg-neutral-50/50 p-8
-                transition-all duration-fast ease-out
-                hover:border-neutral-300 hover:bg-neutral-50
-              `}
-              style={{
-                animation: `cardIn 500ms ${(available.length + i) * 80}ms both cubic-bezier(0.22, 1, 0.36, 1)`,
-              }}
-            >
-              {/* Top row: icon + status badge */}
-              <div className="flex items-center justify-between">
-                <div className="text-heading-l text-neutral-300">
-                  <Icon size={24} strokeWidth={1.5} />
-                </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-micro font-medium bg-neutral-100 text-neutral-500">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-neutral-300" />
-                  Em desenvolvimento
-                </span>
-              </div>
-
-              {/* Title + tagline */}
-              <h3 className="mt-4 text-heading-m text-neutral-400">
-                {v.name}
-              </h3>
-              <p className="mt-1 font-serif text-body-s italic text-neutral-400">
-                {v.tagline}
-              </p>
-
-              {/* Description */}
-              <p className="mt-4 text-body-s text-neutral-400 leading-relaxed">
-                {v.description}
-              </p>
-
-              {/* CTA — notify me */}
-              <div className="mt-auto pt-4">
-                <a
-                  href={`https://wa.me/5511999999999?text=Oi%20Maria!%20Quero%20ser%20avisado%20quando%20o%20${encodeURIComponent(v.persona)}%20chegar`}
-                  className="inline-flex items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2.5 text-body-s font-medium text-neutral-600 transition-all hover:border-green-300 hover:text-green-700"
-                >
-                  <Bell size={14} />
-                  Quero ser avisado quando chegar
-                </a>
+                {isAvailable ? (
+                  <div className={`rounded-md px-3 py-2.5 ${a.painBg}`}>
+                    <p className="font-mono text-micro uppercase tracking-micro text-text-tertiary">
+                      dor que resolve
+                    </p>
+                    <p className="mt-0.5 text-body-s font-medium text-neutral-800">
+                      {v.pain}
+                    </p>
+                  </div>
+                ) : (
+                  <a
+                    href={`https://wa.me/5511999999999?text=Oi%20Maria!%20Quero%20ser%20avisado%20quando%20o%20${encodeURIComponent(v.persona)}%20chegar`}
+                    className="inline-flex items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2.5 text-body-s font-medium text-neutral-600 transition-all hover:border-green-300 hover:text-green-700"
+                  >
+                    <Bell size={14} />
+                    Quero ser avisado quando chegar
+                  </a>
+                )}
               </div>
             </div>
           );

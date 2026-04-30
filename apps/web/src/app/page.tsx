@@ -65,7 +65,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-container px-6">
           <div className="mx-auto max-w-2xl text-center">
             <span className="font-mono text-micro font-medium uppercase tracking-micro text-green-600">
-              2 disponíveis · 2 em desenvolvimento
+              4 verticais piloto
             </span>
             <h2 className="mt-3 text-display-m tracking-display text-neutral-900">
               Trilha feita pro seu negócio.
