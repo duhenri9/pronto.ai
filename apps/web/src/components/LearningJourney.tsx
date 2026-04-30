@@ -33,7 +33,7 @@ const STEPS = [
 const IMPACTO = [
   { label: 'MEIs no Brasil', value: '15 milhões', icon: Users },
   { label: 'Sem acesso à IA', value: '80%', icon: Star },
-  { label: 'Vão investir em IA', value: '67%', icon: Zap },
+  { label: 'Irão investir em IA', value: '67%', icon: Zap },
   { label: 'Resultado', value: 'Imediato', icon: TrendingUp },
 ];
 

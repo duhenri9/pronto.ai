@@ -8,7 +8,7 @@ export function WhatsAppChat() {
         <MariaAvatar size={32} />
         <div>
           <div className="text-body-s font-medium">Maria</div>
-          <div className="text-micro text-green-600">online · respondendo</div>
+          <div className="text-micro text-green-600">online · respondendo...</div>
         </div>
       </div>
 
