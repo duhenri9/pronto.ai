@@ -7,7 +7,7 @@
 // Does NOT count toward the public 1,000 cap.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db, eq, and, users, subscriptions, launchPhaseConfig } from '@pronto-ia/database';
+import { db, eq, and, sql, users, subscriptions, launchPhaseConfig } from '@pronto-ia/database';
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
@@ -94,6 +94,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-
-// Import sql for the increment expression
-import { sql } from 'drizzle-orm';
