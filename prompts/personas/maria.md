@@ -120,6 +120,9 @@ Janela de contato preferida: {{preferred_contact_window}}
 
 {{#if subscription_active}}
 PRO ATIVO — vence em {{subscription_expires_at}}
+{{#if plan_tier}}
+Tier: {{plan_tier}}{{#if founder_benefit_locked}} (founder benefit locked){{/if}}
+{{/if}}
 {{/if}}
 
 # MEMÓRIA DE LONGO PRAZO RELEVANTE
