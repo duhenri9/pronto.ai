@@ -21,7 +21,7 @@ export function WhatsAppChat() {
           Ana
         </div>
         <div className="mr-auto max-w-[88%] rounded-xl rounded-bl-sm border border-border-subtle bg-surface px-3 py-2 text-body-s leading-relaxed">
-          Prazer, Ana! Aqui no Pronto.IA a gente faz uma coisa simples: te ajuda a usar IA pra ganhar mais com o seu negócio.
+          Prazer, Ana! Aqui na Pronto.IA a gente faz uma coisa simples: te ajuda a usar IA pra ganhar mais com o seu negócio.
         </div>
         <div className="mr-auto max-w-[88%] rounded-xl rounded-bl-sm border border-border-subtle bg-surface px-3 py-2 text-body-s leading-relaxed">
           Me fala em duas linhas: o que você faz da vida?
