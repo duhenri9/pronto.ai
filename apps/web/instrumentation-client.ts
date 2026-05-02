@@ -12,5 +12,5 @@ Sentry.init({
 // Router instrumentation
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
 
-// Error boundary instrumentation
-export const onRouterTransitionEnd = Sentry.captureRouterTransitionEnd;
+// Note: `captureRouterTransitionEnd` is not exported by @sentry/nextjs in this version.
+// Keep only the supported hook to avoid build failures.
