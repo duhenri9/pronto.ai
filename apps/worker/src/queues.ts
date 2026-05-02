@@ -10,8 +10,11 @@ import { Queue } from 'bullmq';
 import IORedis from 'ioredis';
 
 // Shared Redis connection for BullMQ
-const connection = new IORedis(process.env.REDIS_URL!, {
+// rediss:// scheme (Upstash) requires explicit TLS options in ioredis
+const redisUrl = process.env.REDIS_URL!;
+const connection = new IORedis(redisUrl, {
   maxRetriesPerRequest: null, // BullMQ requirement
+  ...(redisUrl.startsWith('rediss://') && { tls: {} }),
 });
 
 // Shared default job options
