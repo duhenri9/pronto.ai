@@ -1,60 +1,59 @@
 # ============================================
-# STAGE 1: Builder - Compilar TypeScript
+# STAGE 1: Builder — compile packages + worker
 # ============================================
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Instalar pnpm globalmente
 RUN npm install -g pnpm
 
-# Copiar arquivos de dependência do workspace
 COPY pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
-
-# Copiar packages (bibliotecas compartilhadas)
 COPY packages ./packages
-
-# Copiar worker app
 COPY apps/worker ./apps/worker
+COPY prompts ./prompts
 
-# Instalar TODAS as dependências (incluindo devDependencies para build)
 RUN pnpm install --frozen-lockfile
 
-# Limpar cache de build anterior (tsbuildinfo) para force rebuild
-WORKDIR /app/apps/worker
-RUN pnpm run clean && rm -f tsconfig.tsbuildinfo
+# Build shared packages in dependency order
+RUN pnpm --filter=@pronto-ia/types run build
+RUN pnpm --filter=@pronto-ia/database run build
+RUN pnpm --filter=@pronto-ia/events run build
+RUN pnpm --filter=@pronto-ia/whatsapp run build
+RUN pnpm --filter=@pronto-ia/auth run build
+RUN pnpm --filter=@pronto-ia/llm run build
 
-# Build do worker (precisa de tsc, que está em devDependencies)
-RUN pnpm run build
+# Build worker (tsc + copyfiles for prompts)
+WORKDIR /app/apps/worker
+RUN rm -f tsconfig.tsbuildinfo && pnpm run build
 
 # ============================================
-# STAGE 2: Production - Runtime
+# STAGE 2: Production — runtime only
 # ============================================
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Instalar pnpm globalmente
 RUN npm install -g pnpm
 
-# Copiar arquivos de dependência do workspace
 COPY pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
 
-# Copiar packages (bibliotecas compartilhadas)
+# Copy package sources (needed for pnpm workspace resolution)
 COPY packages ./packages
 
-# Copiar worker app (apenas os arquivos necessários)
-COPY apps/worker ./apps/worker
+# Copy compiled package outputs from builder
+COPY --from=builder /app/packages/types/dist     ./packages/types/dist
+COPY --from=builder /app/packages/database/dist  ./packages/database/dist
+COPY --from=builder /app/packages/events/dist    ./packages/events/dist
+COPY --from=builder /app/packages/whatsapp/dist  ./packages/whatsapp/dist
+COPY --from=builder /app/packages/auth/dist      ./packages/auth/dist
+COPY --from=builder /app/packages/llm/dist       ./packages/llm/dist
 
-# Copiar o código compilado da stage builder
+# Copy worker source + compiled output
+COPY apps/worker ./apps/worker
 COPY --from=builder /app/apps/worker/dist ./apps/worker/dist
 
-# Instalar dependências (apenas produção)
+# Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod
 
-# Expor porta (se aplicável)
-EXPOSE 3001
-
-# Iniciar worker com o código compilado
 WORKDIR /app/apps/worker
-CMD ["pnpm", "run", "start"]
+CMD ["node", "dist/index.js"]
