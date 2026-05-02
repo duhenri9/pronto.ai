@@ -15,10 +15,18 @@ import type { ParsedWebhookEvent } from '@pronto-ia/whatsapp';
 import { getRedisConnection } from '@/lib/redis';
 import { checkRateLimit } from '@/lib/rate-limit';
 
-// BullMQ queue — same name as worker's inboundQueue
-const inboundQueue = new Queue('whatsapp.inbound', {
-  connection: getRedisConnection(),
-});
+export const dynamic = 'force-dynamic';
+
+// BullMQ queue — same name as worker's inboundQueue (lazy-init to avoid build-time Redis connection)
+let inboundQueue: Queue | null = null;
+function getInboundQueue(): Queue {
+  if (!inboundQueue) {
+    inboundQueue = new Queue('whatsapp.inbound', {
+      connection: getRedisConnection(),
+    });
+  }
+  return inboundQueue;
+}
 
 // ---- GET: Webhook Verification (Meta Cloud API) ----
 
@@ -97,7 +105,7 @@ export async function POST(request: NextRequest) {
       continue;
     }
 
-    await inboundQueue.add(
+    await getInboundQueue().add(
       'inbound-message',
       {
         phone: event.phone,

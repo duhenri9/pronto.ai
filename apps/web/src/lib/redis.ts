@@ -11,9 +11,11 @@ let redis: IORedis | null = null;
 
 export function getRedisConnection(): IORedis {
   if (!redis) {
-    redis = new IORedis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
+    const url = process.env.REDIS_URL ?? 'redis://localhost:6379';
+    redis = new IORedis(url, {
       maxRetriesPerRequest: null, // BullMQ requirement
       lazyConnect: true, // Don't connect until first command (Vercel cold starts)
+      ...(url.startsWith('rediss://') && { tls: {} }),
     });
   }
   return redis;

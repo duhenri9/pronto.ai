@@ -9,9 +9,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Queue } from 'bullmq';
 import { getRedisConnection } from '@/lib/redis';
 
-const abacateQueue = new Queue('whatsapp.outbound', {
-  connection: getRedisConnection(),
-});
+export const dynamic = 'force-dynamic';
+
+let abacateQueue: Queue | null = null;
+function getAbacateQueue(): Queue {
+  if (!abacateQueue) {
+    abacateQueue = new Queue('whatsapp.outbound', {
+      connection: getRedisConnection(),
+    });
+  }
+  return abacateQueue;
+}
 
 export async function POST(request: NextRequest) {
   // 1. Get raw body for HMAC verification
@@ -29,7 +37,7 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get('x-abacate-hmac-sha256') ?? '';
 
   // 4. Enqueue for worker processing (validation + business logic in worker)
-  await abacateQueue.add('abacate_webhook', {
+  await getAbacateQueue().add('abacate_webhook', {
     type: 'abacate_webhook',
     rawBody: bodyText,
     signature,
