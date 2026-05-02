@@ -46,15 +46,17 @@ COPY packages ./packages
 # Copiar worker app (apenas os arquivos necessários)
 COPY apps/worker ./apps/worker
 
-# Copiar o código compilado da stage builder
-COPY --from=builder /app/apps/worker/dist ./apps/worker/dist
-
 # Instalar dependências (apenas produção)
 RUN pnpm install --frozen-lockfile --prod
+
+# Definir diretório de trabalho do worker antes de copiar o dist
+WORKDIR /app/apps/worker
+
+# Copiar o código compilado da stage builder para o local correto
+COPY --from=builder /app/apps/worker/dist ./dist
 
 # Expor porta (se aplicável)
 EXPOSE 3001
 
 # Iniciar worker com o código compilado
-WORKDIR /app/apps/worker
 CMD ["pnpm", "run", "start"]
