@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.40.0",
+    "@pronto-ia/database": "workspace:*",
     "@pronto-ia/types": "workspace:*",
     "ioredis": "^5.4.1"
   },
