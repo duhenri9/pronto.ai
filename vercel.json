@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "turbo run build --filter=@pronto-ia/web",
+  "buildCommand": "turbo run build --filter=@pronto-ia/web...",
   "outputDirectory": "apps/web/.next",
-  "installCommand": "pnpm install --frozen-lockfile",
+  "installCommand": "pnpm install --frozen-lockfile --prod=false",
   "framework": "nextjs",
   "ignoreCommand": "git diff --quiet HEAD^ HEAD -- apps/web/ packages/"
 }
