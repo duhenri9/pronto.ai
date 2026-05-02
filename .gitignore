@@ -20,3 +20,15 @@ index.html
 prontoia_design_concept_mockup.html
 .next/
 *.tsbuildinfo
+
+# Operational/deployment scripts (use env vars in Railway/Vercel dashboards)
+railway-add-vars.sh
+railway-extract-vars.sh
+railway-vars.txt
+
+# Temporary deployment guides (keep in docs/ if needed)
+FASE*.md
+RAILWAY_*.md
+BUILD_DIAGNOSTICO*.md
+DEPLOY_STATUS*.md
+SETUP_LOCAL*.md
