@@ -93,8 +93,16 @@ export class MetaCloudAPI implements WhatsAppProvider {
     verifyToken?: string;
     appSecret?: string;
   }) {
-    this.apiToken = config?.apiToken ?? process.env.WHATSAPP_API_TOKEN ?? '';
-    this.phoneNumberId = config?.phoneNumberId ?? process.env.WHATSAPP_PHONE_NUMBER_ID ?? '';
+    this.apiToken =
+      config?.apiToken ??
+      process.env.WHATSAPP_API_TOKEN ??
+      process.env.META_WHATSAPP_ACCESS_TOKEN ??
+      '';
+    this.phoneNumberId =
+      config?.phoneNumberId ??
+      process.env.WHATSAPP_PHONE_NUMBER_ID ??
+      process.env.META_WHATSAPP_PHONE_NUMBER_ID ??
+      '';
     this.verifyToken = config?.verifyToken ?? process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN ?? '';
     this.appSecret = config?.appSecret ?? process.env.WHATSAPP_APP_SECRET ?? '';
   }

@@ -65,6 +65,17 @@ function optional(name: string): string | undefined {
   return process.env[name];
 }
 
+function optionalAny(...names: string[]): string | undefined {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
 function resolvePromptsDir(): string {
   const envDir = optional('PROMPTS_DIR');
   if (envDir) return envDir;
@@ -88,8 +99,8 @@ export const env: EnvConfig = {
   ZAPI_SECURITY_TOKEN: optional('ZAPI_SECURITY_TOKEN'),
 
   // Cloud API (production)
-  WHATSAPP_API_TOKEN: optional('WHATSAPP_API_TOKEN'),
-  WHATSAPP_PHONE_NUMBER_ID: optional('WHATSAPP_PHONE_NUMBER_ID'),
+  WHATSAPP_API_TOKEN: optionalAny('WHATSAPP_API_TOKEN', 'META_WHATSAPP_ACCESS_TOKEN'),
+  WHATSAPP_PHONE_NUMBER_ID: optionalAny('WHATSAPP_PHONE_NUMBER_ID', 'META_WHATSAPP_PHONE_NUMBER_ID'),
   WHATSAPP_WEBHOOK_VERIFY_TOKEN: optional('WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
 
   // LLM defaults

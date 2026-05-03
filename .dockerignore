@@ -11,6 +11,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 .vscode
+.env
+.env.*
+!.env.example
 .env.local
 .env.development
 .env.test

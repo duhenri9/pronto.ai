@@ -52,10 +52,6 @@ COPY --from=builder /app/packages/llm/dist       ./packages/llm/dist
 COPY apps/worker ./apps/worker
 COPY --from=builder /app/apps/worker/dist ./apps/worker/dist
 
-# Copy root env files if present in the build context
-COPY .env* ./
-RUN if [ -f /app/.env.example ] && [ ! -f /app/.env ]; then cp /app/.env.example /app/.env; fi
-
 # Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod
 
