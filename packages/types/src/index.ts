@@ -161,3 +161,11 @@ export enum MemoryType {
 
 // ---- LGPD ----
 export const LGPD_CONSENT_VERSION = '1.0.0';
+
+
+// ---- AbacatePay Webhooks ----
+export interface AbacateWebhookJob {
+  rawBody: string;
+  signature: string;
+  payload: Record<string, unknown>;
+}

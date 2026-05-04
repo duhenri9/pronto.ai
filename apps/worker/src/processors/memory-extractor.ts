@@ -1,11 +1,9 @@
-// @ts-nocheck
 // ============================================
 // PRONTO.IA — Memory Extractor (Claude Haiku)
 // ============================================
 // Extracts structured memories from conversations
 // using Anthropic Claude Haiku with a specialized prompt.
 
-declare module '@anthropic-ai/sdk'{const A:any;export default A}
 import Anthropic from '@anthropic-ai/sdk';
 import { db, eq, and } from '@pronto-ia/database';
 import { userMemory } from '@pronto-ia/database';
