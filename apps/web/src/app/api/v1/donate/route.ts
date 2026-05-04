@@ -2,30 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const MIN_AMOUNT = 500; // R$ 5,00 em centavos
 const MAX_AMOUNT = 10000000; // R$ 100.000,00 em centavos
-const ABACATE_API_URL = 'https://api.abacatepay.com/v2/transparents/create';
+const ABACATE_API_URL = 'https://api.abacatepay.com/v2/checkouts/create';
+const DONATION_PRODUCT_ID = 'prod_Y1N66L21WAeexcX6YTxdYea2';
 
-interface AbacateCreateResponse {
+interface AbacateCheckoutResponse {
   data?: {
     id: string;
+    url: string;
     amount: number;
     status: string;
-    brCode?: string;
-    brCodeBase64?: string;
-    qrCode?: string;
-    qrCodeBase64?: string;
-    pixCode?: string;
-    expiresAt?: string;
     createdAt?: string;
     updatedAt?: string;
   };
   error?: string | null;
-  success?: boolean | { message?: string };
+  success?: boolean;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { amount, method } = body;
+    const { amount } = body;
     const apiKey = process.env.ABACATE_PAY_API_KEY ?? process.env.ABACATE_PAY_API;
 
     // Validate amount
@@ -36,72 +32,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate method
-    if (!method || !['PIX', 'CREDIT_CARD'].includes(method)) {
-      return NextResponse.json(
-        { error: 'Método deve ser PIX ou CREDIT_CARD' },
-        { status: 400 },
-      );
-    }
-
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'Doações Pix ainda não estão configuradas neste ambiente.' },
+        { error: 'Doa\u00e7\u00f5es ainda n\u00e3o est\u00e3o configuradas neste ambiente.' },
         { status: 503 },
       );
     }
 
-    if (method === 'PIX') {
-      const upstream = await fetch(ABACATE_API_URL, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount,
-          method: 'PIX',
-          expiresIn: 3600,
-          description: 'Doação para o projeto Pronto.IA',
-          metadata: {
-            source: 'pronto-ia-web',
-            kind: 'donation',
-          },
-        }),
-        cache: 'no-store',
-      });
+    const quantity = Math.round(amount / 100);
 
-      const data = (await upstream.json()) as AbacateCreateResponse;
-      const pixCode =
-        data.data?.brCode?.trim() ||
-        data.data?.pixCode?.trim() ||
-        '';
-      const qrCode =
-        data.data?.brCodeBase64?.trim() ||
-        data.data?.qrCodeBase64?.trim() ||
-        data.data?.qrCode?.trim() ||
-        '';
+    const upstream = await fetch(ABACATE_API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        items: [{ id: DONATION_PRODUCT_ID, quantity }],
+        methods: ['PIX'],
+      }),
+      cache: 'no-store',
+    });
 
-      if (!upstream.ok || !data.data?.id || !pixCode || !qrCode) {
-        return NextResponse.json(
-          { error: data.error ?? 'Não foi possível gerar o Pix agora.' },
-          { status: upstream.status || 502 },
-        );
-      }
+    const data = (await upstream.json()) as AbacateCheckoutResponse;
 
-      return NextResponse.json({
-        donationId: data.data.id,
-        status: data.data.status.toLowerCase(),
-        pixCode,
-        qrCode,
-        expiresAt: data.data.expiresAt ?? null,
-      });
+    if (!upstream.ok || !data.success || !data.data?.url) {
+      return NextResponse.json(
+        { error: data.error ?? 'N\u00e3o foi poss\u00edvel gerar o checkout agora.' },
+        { status: upstream.status || 502 },
+      );
     }
 
-    return NextResponse.json(
-      { error: 'Método ainda não implementado.' },
-      { status: 501 },
-    );
+    return NextResponse.json({
+      checkoutId: data.data.id,
+      checkoutUrl: data.data.url,
+      amount: data.data.amount,
+    });
   } catch {
     return NextResponse.json(
       { error: 'Erro interno. Tente novamente.' },

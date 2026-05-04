@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart, X, Copy, Check, Coffee, Rocket, Wallet, ArrowRight } from 'lucide-react';
+import { Heart, X, Coffee, Rocket, Wallet, ArrowRight, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 /* ── Tiers de valor ── */
@@ -41,39 +41,11 @@ const VALUE_TIERS = [
   },
 ] as const;
 
-type DonationState = 'idle' | 'selecting' | 'loading' | 'success' | 'error';
+type DonationState = 'idle' | 'selecting' | 'loading' | 'error';
 
 function formatBRL(cents: number): string {
   const reais = cents / 100;
   return reais.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
-
-function normalizeQrCodeSrc(value: string): string {
-  const trimmed = value.trim();
-  if (!trimmed) return '';
-  if (trimmed.startsWith('data:image')) return trimmed;
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
-  return `data:image/png;base64,${trimmed}`;
-}
-
-function buildQrFallbackFromPixCode(pixCode: string): string {
-  const trimmed = pixCode.trim();
-  if (!trimmed) return '';
-  return `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(trimmed)}`;
-}
-
-function formatExpiry(value: string | null): string | null {
-  if (!value) return null;
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-
-  return new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
 }
 
 export function DonateSection() {
@@ -82,57 +54,37 @@ export function DonateSection() {
   const [state, setState] = useState<DonationState>('selecting');
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState('');
-  const [pixCode, setPixCode] = useState('');
-  const [qrCode, setQrCode] = useState('');
-  const [expiresAt, setExpiresAt] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('Algo deu errado — tente de novo.');
+  const [errorMessage, setErrorMessage] = useState('Algo deu errado \u2014 tente de novo.');
 
   const handleDonate = async () => {
     const amount = selectedAmount ?? Math.round(parseFloat(customAmount) * 100);
     if (!amount || amount < 500 || amount > 10000000) return;
 
     setState('loading');
-    setErrorMessage('Algo deu errado — tente de novo.');
+    setErrorMessage('Algo deu errado \u2014 tente de novo.');
     try {
       const res = await fetch('/api/v1/donate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, method: 'PIX' }),
+        body: JSON.stringify({ amount }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setErrorMessage(data.error ?? 'Não foi possível gerar o Pix agora.');
+        setErrorMessage(data.error ?? 'N\u00e3o foi poss\u00edvel gerar o Pix agora.');
         setState('error');
         return;
       }
 
-      const normalizedPixCode = String(data.pixCode ?? '').trim();
-      const normalizedQrCode = String(data.qrCode ?? '').trim();
-
-      if (normalizedPixCode || normalizedQrCode) {
-        const finalQrCode = normalizedQrCode
-          ? normalizeQrCodeSrc(normalizedQrCode)
-          : buildQrFallbackFromPixCode(normalizedPixCode);
-
-        setPixCode(normalizedPixCode);
-        setQrCode(finalQrCode);
-        setExpiresAt(data.expiresAt ?? null);
-        setState('success');
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
       } else {
-        setErrorMessage('Não foi possível gerar o Pix agora.');
+        setErrorMessage('N\u00e3o foi poss\u00edvel gerar o checkout agora.');
         setState('error');
       }
     } catch {
-      setErrorMessage('Erro de conexão. Tente novamente em instantes.');
+      setErrorMessage('Erro de conex\u00e3o. Tente novamente em instantes.');
       setState('error');
     }
-  };
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(pixCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleClose = () => {
@@ -143,11 +95,7 @@ export function DonateSection() {
       setState('selecting');
       setSelectedAmount(null);
       setCustomAmount('');
-      setPixCode('');
-      setQrCode('');
-      setExpiresAt(null);
-      setCopied(false);
-      setErrorMessage('Algo deu errado — tente de novo.');
+      setErrorMessage('Algo deu errado \u2014 tente de novo.');
     }, 150);
   };
 
@@ -204,7 +152,7 @@ export function DonateSection() {
                   Cada real capacita um Empreendedor brasileiro para a era da IA
                 </h3>
                 <p className="text-body-s text-white/70 leading-relaxed">
-                  A plataforma Pronto.IA treina MEIs de graça, no WhatsApp, sem complicação. Seu apoio paga os servidores, a IA e a equipe que faz isso acontecer de verdade.
+                  A plataforma Pronto.IA treina MEIs de gra\u00e7a, no WhatsApp, sem complica\u00e7\u00e3o. Seu apoio paga os servidores, a IA e a equipe que faz isso acontecer de verdade.
                 </p>
               </div>
             )}
@@ -284,7 +232,7 @@ export function DonateSection() {
                 </button>
 
                 <p className="mt-4 text-center text-micro text-[#757994]">
-                  Sua doação é segura e transparente.{' '}
+                  Sua doa\u00e7\u00e3o \u00e9 segura e transparente.{' '}
                   <Link href="/transparencia" className="text-[#00D97E] hover:underline" onClick={handleClose}>
                     Veja como usamos cada real →
                   </Link>
@@ -296,74 +244,8 @@ export function DonateSection() {
             {state === 'loading' && (
               <div className="flex flex-col items-center py-8">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#00D97E] border-t-transparent" />
-                <p className="mt-4 text-body-s text-white/70">Gerando Pix...</p>
-              </div>
-            )}
-
-            {/* ── Success ── */}
-            {state === 'success' && (
-              <div className="flex flex-col items-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#00D97E]/20">
-                  <Heart size={28} className="text-[#00D97E]" fill="#00D97E" />
-                </div>
-                <p className="mt-4 text-heading-s font-medium text-white/90">Obrigado</p>
-                <p className="mt-2 text-center text-body-s text-white/70">
-                  Você ajuda a capacitar o Brasil para a era da IA.
-                </p>
-
-                <div className="mt-5 flex flex-col items-center gap-2">
-                  {qrCode ? (
-                    <>
-                      <div className="rounded-2xl bg-white p-3 shadow-elev-1">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={qrCode}
-                          alt="QR Code Pix para doação"
-                          className="h-40 w-40 rounded-lg"
-                        />
-                      </div>
-                      <p className="font-mono text-micro text-[#757994]">QR Code Pix</p>
-                    </>
-                  ) : (
-                    <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-center text-body-s text-yellow-100">
-                      O QR Code não veio pronto, mas o código Pix abaixo pode ser copiado e pago normalmente.
-                    </div>
-                  )}
-                  {formatExpiry(expiresAt) && (
-                    <p className="text-micro text-[#757994]">
-                      Válido até {formatExpiry(expiresAt)}
-                    </p>
-                  )}
-                </div>
-
-                {/* Copia-e-cola */}
-                <div className="mt-4 w-full rounded-lg bg-[#1A2150] p-4">
-                  <p className="font-mono text-micro uppercase tracking-micro text-[#757994] mb-2">
-                    Código copia-e-cola
-                  </p>
-                  {pixCode ? (
-                    <p className="text-caption text-white/80 break-all select-all leading-relaxed">{pixCode}</p>
-                  ) : (
-                    <p className="text-caption text-yellow-100 leading-relaxed">
-                      O código Pix não foi retornado corretamente por este ambiente. Tente novamente em instantes.
-                    </p>
-                  )}
-                </div>
-
-                <button
-                  onClick={handleCopy}
-                  disabled={!pixCode}
-                  className="mt-3 flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2.5 text-body-s text-white/80 hover:bg-white/5 transition-colors"
-                >
-                  {copied ? <Check size={16} className="text-[#00D97E]" /> : <Copy size={16} />}
-                  {copied ? 'Copiado!' : 'Copiar código'}
-                </button>
-
-                <p className="mt-5 text-micro text-[#757994]">
-                  <Link href="/transparencia" className="text-[#00D97E] hover:underline" onClick={handleClose}>
-                    Veja como usamos cada real →
-                  </Link>
-                </p>
+                <p className="mt-4 text-body-s text-white/70">Redirecionando para o pagamento...</p>
+                <p className="mt-2 text-micro text-[#757994]">Voc\u00ea ser\u00e1 levado para a p\u00e1gina segura de pagamento.</p>
               </div>
             )}
 
