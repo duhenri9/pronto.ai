@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (method === 'PIX') {
-      const externalId = `don_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       const upstream = await fetch(ABACATE_API_URL, {
         method: 'POST',
         headers: {
@@ -60,16 +59,12 @@ export async function POST(request: NextRequest) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          method: 'PIX',
-          data: {
-            amount,
-            expiresIn: 3600,
-            description: 'Doação para o projeto Pronto.IA',
-            externalId,
-            metadata: {
-              source: 'pronto-ia-web',
-              kind: 'donation',
-            },
+          amount,
+          expiresIn: 3600,
+          description: 'Doação para o projeto Pronto.IA',
+          metadata: {
+            source: 'pronto-ia-web',
+            kind: 'donation',
           },
         }),
         cache: 'no-store',
