@@ -6,14 +6,14 @@ const ABACATE_API_URL = 'https://api.abacatepay.com/v2';
 const ABACATE_API_KEY = 'abc_prod_YAyHFKhfMstfFBgCB5rDMP14';
 
 const PRODUCT_MAP: Record<number, string> = {
-  500: 'prod_5eyIJJ3zZfb5Rhz1MfyZF120',
+  500: 'prod_GBAQG3aZshSFQ1EgRaFWmMUP',
   1000: 'prod_hUFq0TtK3FpjNNWn65zpmZY6',
-  2000: 'prod_u3utwEArCmMh4Ksy4Km56kcn',
-  5000: 'prod_TtNnRJy0CZHW hg6FNDnrWTNh',
-  10000: 'prod_uxuwaTDsN0prALt5XtjdHhnx',
+  2000: 'prod_u3utwEArCbMh4Ksy4Km56kcn',
+  5000: 'prod_TtNnRJy0CZHWhg6FNdnrWTNh',
+  10000: 'prod_uxuwaTDsN0prALt5XtjdHxnx',
   20000: 'prod_KaxKucZLXkqUqzbB0ZTgTa5U',
   50000: 'prod_gPUP2TqAepqCLJuReMesBdG0',
-  100000: 'prod_hDH2yE6EEDRcLcXHarLtJMHY',
+  100000: 'prod_hHD2yE6EEDRcLcXHarLtJMHY',
   250000: 'prod_xeHLnQ4kpZWpch0adsuhcJ0D',
 };
 
