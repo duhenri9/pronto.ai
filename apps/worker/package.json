@@ -12,6 +12,7 @@
     "test:unit": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.40.0",
     "@pronto-ia/database": "workspace:*",
     "@pronto-ia/events": "workspace:*",
     "@pronto-ia/llm": "workspace:*",

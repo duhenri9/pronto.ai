@@ -47,6 +47,119 @@ export const TABLES = {
   enrollments: 'enrollments',
 } as const;
 
+// ---- AbacatePay Event Normalizer (pure function) ----
+
+export type AbacateEventType =
+  | 'subscription.created'
+  | 'subscription.canceled'
+  | 'subscription.payment_failed'
+  | 'charge.paid'
+  | 'charge.failed'
+  | 'charge.refunded'
+  | 'unknown';
+
+export interface NormalizedAbacateEvent {
+  eventType: AbacateEventType;
+  customerId: string;
+  customerName: string;
+  customerEmail: string;
+  amountCents: number;
+  currency: string;
+  subscriptionId: string | null;
+  externalId: string | null;
+  status: string;
+  rawEvent: Record<string, any>;
+}
+
+/**
+ * Normalizes AbacatePay webhook events into a consistent format.
+ * Handles direct format, nested `data` wrapper, and v2 `event.data` structure.
+ */
+export function normalizeAbacateEvent(raw: Record<string, any>): NormalizedAbacateEvent {
+  if (!raw || typeof raw !== 'object') {
+    return makeUnknown(raw);
+  }
+
+  // v2 format: { event: "type", data: { ... } }
+  const payload = raw.data && typeof raw.data === 'object' && !Array.isArray(raw.data)
+    ? raw.data as Record<string, any>
+    : raw;
+
+  const eventType = inferEventType(raw.event ?? raw.type ?? raw.event_type ?? '');
+  const status = payload.status ?? raw.status ?? 'unknown';
+
+  // Customer extraction — check multiple possible field locations
+  const customer = payload.customer ?? payload.Customer ?? raw.customer ?? raw.Customer ?? {};
+  const customerId =
+    customer.id ?? customer.customer_id ?? payload.customer_id ?? raw.customer_id ?? '';
+  const customerName =
+    customer.name ?? customer.customer_name ?? payload.customer_name ?? raw.customer_name ?? '';
+  const customerEmail =
+    customer.email ?? customer.customer_email ?? payload.customer_email ?? raw.customer_email ?? '';
+  // AbacatePay sometimes uses 'whatsapp' or 'phoneNumber' for the customer contact
+  const customerPhone =
+    customer.whatsapp ?? customer.phoneNumber ?? customer.phone_number ?? payload.whatsapp ?? '';
+
+  // Amount extraction — try multiple field names, handle cents vs float vs string
+  let amountCents = 0;
+  const rawAmount = payload.amount ?? payload.Amount ?? payload.total ?? payload.value ?? 0;
+  if (typeof rawAmount === 'number') {
+    // If > 10000, likely already in cents (e.g. 29900 = R$299.00)
+    amountCents = rawAmount > 10000 ? Math.round(rawAmount) : Math.round(rawAmount * 100);
+  } else if (typeof rawAmount === 'string') {
+    amountCents = Math.round(parseFloat(rawAmount) * 100);
+  }
+
+  const currency = (payload.currency ?? raw.currency ?? 'BRL').toUpperCase();
+  const subscriptionId = payload.subscription_id ?? payload.subscriptionId ?? null;
+  const externalId = payload.external_id ?? payload.externalId ?? payload.id ?? null;
+
+  return {
+    eventType,
+    customerId: String(customerId),
+    customerName: String(customerName),
+    customerEmail: String(customerEmail),
+    amountCents,
+    currency,
+    subscriptionId: subscriptionId ? String(subscriptionId) : null,
+    externalId: externalId ? String(externalId) : null,
+    status: String(status),
+    rawEvent: raw,
+  };
+}
+
+function inferEventType(raw: string): AbacateEventType {
+  const t = raw.toLowerCase().replace(/[._-]/g, '.');
+  if (t.includes('subscription') && (t.includes('created') || t.includes('new')))
+    return 'subscription.created';
+  if (t.includes('subscription') && t.includes('cancel'))
+    return 'subscription.canceled';
+  if (t.includes('subscription') && (t.includes('fail') || t.includes('payment_failed')))
+    return 'subscription.payment_failed';
+  if (t.includes('charge') && (t.includes('paid') || t.includes('succeeded') || t.includes('approved')))
+    return 'charge.paid';
+  if (t.includes('charge') && t.includes('fail'))
+    return 'charge.failed';
+  if (t.includes('charge') && (t.includes('refund') || t.includes('reversed')))
+    return 'charge.refunded';
+  return 'unknown';
+}
+
+function makeUnknown(raw: any): NormalizedAbacateEvent {
+  return {
+    eventType: 'unknown',
+    customerId: '',
+    customerName: '',
+    customerEmail: '',
+    amountCents: 0,
+    currency: 'BRL',
+    subscriptionId: null,
+    externalId: null,
+    status: 'unknown',
+    rawEvent: raw ?? {},
+  };
+}
+
 // ---- Inbound Processor Result ----
 
 export interface InboundResult {

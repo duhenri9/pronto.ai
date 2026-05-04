@@ -28,6 +28,12 @@ const defaultJobOptions = {
 export const inboundQueue = new Queue('whatsapp.inbound', { connection, defaultJobOptions });
 export const outboundQueue = new Queue('whatsapp.outbound', { connection, defaultJobOptions });
 export const scheduledQueue = new Queue('whatsapp.scheduled', { connection, defaultJobOptions });
+export const memoryQueue = new Queue('whatsapp.memory', { connection, defaultJobOptions: {
+  attempts: 2,
+  backoff: { type: 'exponential' as const, delay: 5000 },
+  removeOnComplete: { age: 86400, count: 500 },
+  removeOnFail: { age: 3 * 86400 },
+} });
 
 // ---- Job Data Types ----
 
@@ -64,11 +70,21 @@ export interface ScheduledJobData {
   buttons?: Array<{ id: string; title: string }>;
 }
 
+export interface MemoryExtractionJobData {
+  userId: string;
+  userMessage: string;
+  assistantResponse: string;
+  persona?: string;
+  messageId?: string;
+  sessionId?: string;
+}
+
 // ---- Helper: close connections ----
 
 export async function closeQueues(): Promise<void> {
   await inboundQueue.close();
   await outboundQueue.close();
   await scheduledQueue.close();
+  await memoryQueue.close();
   connection.disconnect();
 }

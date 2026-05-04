@@ -18,12 +18,12 @@ import {
   enrollments,
   processedEvents,
 } from '@pronto-ia/database';
-import { ProntoLLMClient, getLLMClient, loadPrompt, classifyIntent, getModelForIntent, canAccessSpecialist } from '@pronto-ia/llm';
+import { getLLMClient, loadPrompt, classifyIntent, getModelForIntent, canAccessSpecialist } from '@pronto-ia/llm';
 import type { ChatMessage, LLMCallResult, Intent } from '@pronto-ia/llm';
 import { eventBus } from '@pronto-ia/events';
 
-import type { InboundJobData, OutboundJobData } from '../queues';
-import { outboundQueue } from '../queues';
+import type { InboundJobData, OutboundJobData, MemoryExtractionJobData } from '../queues';
+import { outboundQueue, memoryQueue } from '../queues';
 import {
   handleLgpdDeleteRequest,
   handleLgpdConfirmation,
@@ -271,6 +271,20 @@ export const inboundWorker = new Worker<InboundJobData>(
       lessonId,
       llmCallId,
     } as OutboundJobData, { attempts: 3, backoff: { type: 'exponential', delay: 2000 } });
+
+    // ---- Step 10: Fire-and-forget memory extraction ----
+    try {
+      await memoryQueue.add('extract', {
+        userId,
+        userMessage: messageText,
+        assistantResponse: llmResult.text,
+        persona: activePersona,
+        messageId,
+        sessionId,
+      } as MemoryExtractionJobData, { attempts: 2, backoff: { type: 'exponential', delay: 5000 } });
+    } catch (memErr) {
+      console.warn(`[INBOUND] Memory extraction enqueue failed for ${phone}:`, memErr);
+    }
 
     console.log(`[INBOUND] Processed ${phone}: ${llmResult.inputTokens}+${llmResult.outputTokens} tokens, ${llmResult.latencyMs}ms`);
   },

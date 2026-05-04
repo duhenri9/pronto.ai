@@ -32,3 +32,4 @@ RAILWAY_*.md
 BUILD_DIAGNOSTICO*.md
 DEPLOY_STATUS*.md
 SETUP_LOCAL*.md
+**/tsconfig.tsbuildinfo

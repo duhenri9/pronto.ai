@@ -7,10 +7,11 @@
 import './env';
 import './instrumentation';
 import { initPromptsDir } from './prompts-loader';
-import { inboundQueue, outboundQueue, scheduledQueue, closeQueues } from './queues';
+import { inboundQueue, outboundQueue, scheduledQueue, memoryQueue, closeQueues } from './queues';
 import { inboundWorker, closeInboundWorker } from './processors/inbound';
 import { outboundWorker, closeOutboundWorker } from './processors/outbound';
 import { scheduledWorker, closeScheduledWorker } from './processors/scheduler';
+import { memoryWorker, closeMemoryWorker } from './processors/memory-worker';
 
 async function main() {
   console.log('[WORKER] Starting Pronto.IA worker...');
@@ -36,8 +37,9 @@ async function main() {
   const inboundCount = await inboundQueue.getWaitingCount();
   const outboundCount = await outboundQueue.getWaitingCount();
   const scheduledCount = await scheduledQueue.getWaitingCount();
+  const memoryCount = await memoryQueue.getWaitingCount();
 
-  console.log(`[WORKER] Queue state: inbound=${inboundCount}, outbound=${outboundCount}, scheduled=${scheduledCount}`);
+  console.log(`[WORKER] Queue state: inbound=${inboundCount}, outbound=${outboundCount}, scheduled=${scheduledCount}, memory=${memoryCount}`);
 
   // ---- Workers are already started by module imports ----
   console.log('[WORKER] Inbound worker started (concurrency: 5)');
@@ -55,6 +57,7 @@ async function main() {
       await closeInboundWorker();
       await closeOutboundWorker();
       await closeScheduledWorker();
+      await closeMemoryWorker();
       await closeQueues();
     } catch (err) {
       console.error('[WORKER] Error during shutdown:', err);
